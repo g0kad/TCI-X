@@ -145,6 +145,7 @@ All are bidirectional unless marked. The server echoes and pushes them just like
 | `rx_filter_center` | `rx_filter_center:<trx>;` | Action: put the passband back at the mode's normal centre, keeping its width (the K3's SHIFT/NORM). The server then pushes `rx_filter_band`. The manifest lists it as `cap:rx_filter_center,w,action`, and lists `rx_filter_band` as `cap:rx_filter_band,rw,range,<min_width>,<max_width>,<step>,hz`, a range that applies to the width (`high - low`). |
 | `notch` | `notch:<trx>,<bool>,<hz>;` | Manual notch. |
 | `apf` | `apf:<trx>,<bool>;` | Audio peaking filter (CW). |
+| `filter_shape` | `filter_shape:<trx>,<shape>;` | The DSP filter's skirt, from the manifest's enum (Icom: `sharp`, `soft`). |
 
 ### 5.5 Transmitter
 
@@ -154,9 +155,13 @@ All are bidirectional unless marked. The server echoes and pushes them just like
 | `comp` | `comp:<trx>,<bool>,<pct>;` | Speech compressor on/off and level. |
 | `monitor` | `monitor:<trx>,<bool>,<pct>;` | The radio's transmit monitor (hearing your own signal) on/off and level. Base TCI's `mon_enable` and `mon_volume` are the SDR program's own monitor, in dB; this is the radio's. |
 | `vox` | `vox:<trx>,<bool>;` | |
+| `vox_gain` | `vox_gain:<trx>,<pct>;` | VOX sensitivity, 0–100. |
+| `anti_vox` | `anti_vox:<trx>,<pct>;` | Anti-VOX level (how much receive audio it ignores), 0–100. |
 | `break_in` | `break_in:<trx>,<mode>;` | `off`, `semi` or `full`. |
+| `break_in_delay` | `break_in_delay:<trx>,<tenths>;` | Semi break-in's hang time in tenths of a dot at the current speed (Icom 2.0–13.0 dots: `20`–`130`), as `cap:break_in_delay,rw,range,20,130,1,ddot`. |
 | `cw_pitch` | `cw_pitch:<trx>,<hz>;` | |
 | `essb` | `essb:<trx>,<bool>;` | Extended SSB: a wider TX bandwidth (the K3's 3.0–4.0 kHz). |
+| `tx_bandwidth` | `tx_bandwidth:<trx>,<name>;` | The SSB transmit bandwidth preset, from the manifest's enum (Icom TBW: `wide`, `mid`, `narrow`). |
 | `data_mode` | `data_mode:<trx>,<bool>[,<filter>];` | For radios where DATA is a flag on top of the mode (Icom `1A 06`). `digu`/`digl` in `modulation` set it too. |
 
 ### 5.6 Meters
