@@ -40,7 +40,8 @@ cap:audio_stream_samples,rw,range,64,2048,1,frames
 cap:audio_codec,rw,enum,pcm,opus
 cap:filter,rw,enum,fil1,fil2,fil3
 cap:data_mode,rw,bool
-cap:radio_state,r,enum,connected,no_response,port_lost
+cap:radio_state,r,enum,connected,no_response,powered_off,port_lost
+cap:power,rw,bool
 cap:meters_enable,w,bool
 cap:meter.s,r,meter,dbm,-127,-13
 cap:meter.po,r,meter,w,0,100
@@ -82,6 +83,7 @@ cap:cw_macros,w,action
 cap:cw_macros_stop,w,action
 cap_end
 radio_state:connected
+power:true
 data_mode:0,false
 filter:0,0,fil1
 memory_mode:0,false
