@@ -45,10 +45,15 @@ cap:agc_mode,rw,enum,off,slow,med,fast
 cap:rx_nb_enable,rw,bool
 cap:rx_nr_enable,rw,bool
 cap:rx_anf_enable,rw,bool
+cap:rit_enable,rw,bool
+cap:rit_offset,rw,range,-9999,9999,1,hz
 cap:cw_keyer_speed,rw,range,5,100,1,wpm
 cap:cw_macros_speed,rw,range,5,100,1,wpm
+cap:rf_gain,rw,range,0,100,1,pct
 cap:af_gain,rw,range,0,100,1,pct
 cap:squelch,rw,range,0,100,1,pct
+cap:rx_nb_level,rw,range,0,100,1,pct
+cap:rx_nr_level,rw,range,0,100,1,pct
 cap:break_in,rw,enum,off,semi
 cap:cw_pitch,rw,range,100,6000,1,hz
 cap:rx_filter_band,rw,range,50,10000,50,hz

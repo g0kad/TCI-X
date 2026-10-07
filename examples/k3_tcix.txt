@@ -60,9 +60,11 @@ cap:rx_antenna,rw,bool
 cap:rf_gain,rw,range,0,100,1,pct
 cap:af_gain,rw,range,0,100,1,pct
 cap:squelch,rw,range,0,100,1,pct
+cap:rx_nb_level,rw,range,0,100,1,pct
 cap:mic_gain,rw,range,0,100,1,pct
 cap:rx_xfil,r,enum,1,2,3,4,5
 cap:comp,rw,range,0,100,1,pct
+cap:monitor,rw,range,0,100,1,pct
 cap:rx_filter_band,rw,range,50,4000,50,hz
 cap:rx_filter_center,w,action
 cap:band,w,enum,160m,80m,60m,40m,30m,20m,17m,15m,12m,10m,6m
