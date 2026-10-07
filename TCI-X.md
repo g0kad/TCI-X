@@ -206,7 +206,7 @@ The document version and the wire version are separate. Drafts 0.x of this docum
 
 ## 8. Open points
 
-- **Name.** TCI is Expert Electronics' protocol. We've asked them how they'd like a derived work to refer to it, and we'll follow their wishes. On the wire the opt-in token is `tcix` (no hyphen), matching the lower-case, underscore style of TCI command names.
+- **Name.** TCI is Expert Electronics' protocol. We're asking them how they'd like a derived work to refer to it, and we'll follow their wishes. On the wire the opt-in token is `tcix` (no hyphen), matching the lower-case, underscore style of TCI command names.
 - **Collisions with future base commands.** If a later TCI adds a command with one of our names but different arguments, the base meaning wins, and TCI-X renames its own in a major version.
 - **Spectrum scope data** (for radios that output it: the Flex, IC-7300, IC-705) is left out of 1.0. Draft, not in 1.0: a per-connection binary stream for panadapter clients, plus spots kept by the server. See [drafts/spectrum.md](drafts/spectrum.md).
 - **RX and TX equalisers** (draft, not in 1.0): one `eq` command for graphic EQs and tone controls, with write-only EQs (the K3's TX EQ) marked as such. See [drafts/eq.md](drafts/eq.md).
