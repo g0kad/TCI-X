@@ -74,7 +74,6 @@ cap:vox_gain,rw,range,0,100,1,pct
 cap:anti_vox,rw,range,0,100,1,pct
 cap:break_in_delay,rw,range,20,130,1,ddot
 cap:tx_bandwidth,rw,enum,wide,mid,narrow
-cap:filter_shape,rw,enum,sharp,soft
 cap:comp,rw,range,0,100,1,pct
 cap:monitor,rw,range,0,100,1,pct
 cap:tone,rw,enum,off,tone,tsql
