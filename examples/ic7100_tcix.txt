@@ -58,6 +58,7 @@ cap:cw_keyer_speed,rw,range,6,48,1,wpm
 cap:cw_macros_speed,rw,range,6,48,1,wpm
 cap:preamp,rw,enum,off,p1
 cap:attenuator,rw,enum,0,12
+cap:af_gain,rw,range,0,100,1,pct
 cap:squelch,rw,range,0,100,1,pct
 cap:rx_nb_level,rw,range,0,100,1,pct
 cap:rx_nr_level,rw,range,0,100,1,pct
@@ -66,6 +67,7 @@ cap:vox,rw,bool
 cap:break_in,rw,enum,off,semi,full
 cap:cw_pitch,rw,range,300,900,1,hz
 cap:comp,rw,range,0,100,1,pct
+cap:monitor,rw,range,0,100,1,pct
 cap:tone,rw,enum,off,tone,tsql
 cap:tone_hz,r,info,67.0,69.3,71.9,74.4,77.0,79.7,82.5,85.4,88.5,91.5,94.8,97.4,100.0,103.5,107.2,110.9,114.8,118.8,123.0,127.3,131.8,136.5,141.3,146.2,150.0,156.7,159.8,162.2,165.5,167.9,171.3,173.8,177.3,179.9,183.5,186.2,189.9,192.8,196.6,199.5,203.5,206.5,210.7,218.1,225.7,229.1,233.6,241.8,250.3,254.1
 cap:duplex,rw,enum,simplex,minus,plus
