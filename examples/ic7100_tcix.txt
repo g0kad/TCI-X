@@ -47,6 +47,9 @@ cap:meter.s,r,meter,dbm,-127,-13
 cap:meter.po,r,meter,w,0,100
 cap:meter.swr,r,meter,ratio,1,5,3
 cap:meter.alc,r,meter,pct,0,100,100
+cap:meter.comp,r,meter,db,0,30
+cap:meter.id,r,meter,a,0,25
+cap:meter.vd,r,meter,v,0,16
 cap:rated_power,r,info,hf,100,6m,100,2m,50,70cm,35
 cap:support,r,info,bench-verified
 cap:agc_mode,rw,enum,fast
