@@ -143,7 +143,8 @@ All are bidirectional unless marked. The server echoes and pushes them just like
 | `pbt` | `pbt:<trx>,<inner_hz>,<outer_hz>;` | Twin passband tuning. |
 | `rx_xfil` | `rx_xfil:<trx>,<n>;` | Read-only: the crystal (roofing) filter the radio has chosen for the current passband, numbered as on the radio (the K3's FL1–FL5). `cap:rx_xfil,r,enum,1,2,3,4,5`. |
 | `rx_filter_center` | `rx_filter_center:<trx>;` | Action: put the passband back at the mode's normal centre, keeping its width (the K3's SHIFT/NORM). The server then pushes `rx_filter_band`. The manifest lists it as `cap:rx_filter_center,w,action`, and lists `rx_filter_band` as `cap:rx_filter_band,rw,range,<min_width>,<max_width>,<step>,hz`, a range that applies to the width (`high - low`). |
-| `notch` | `notch:<trx>,<bool>,<hz>;` | Manual notch. |
+| `notch` | `notch:<trx>,<bool>,<hz>;` | Manual notch: on/off, and the audio frequency it cuts (what you hear), within `cap:notch,rw,range,<lo>,<hi>,1,hz`. The range can depend on the mode (the IC-7100: −1040 to 4040 Hz in SSB, the CW pitch ± 2540 Hz, −5060 to 5100 Hz in AM), and the server re-sends the cap line when it changes. |
+| `notch_width` | `notch_width:<trx>,<name>;` | The manual notch's width, from the manifest's enum (Icom: `wide`, `mid`, `narrow`). |
 | `apf` | `apf:<trx>,<bool>;` | Audio peaking filter (CW). |
 | `filter_shape` | `filter_shape:<trx>,<shape>;` | The DSP filter's skirt, from the manifest's enum (Icom: `sharp`, `soft`). |
 
