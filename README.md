@@ -49,4 +49,4 @@ TCI is Expert Electronics' protocol, published under an MIT permission notice. T
 
 ## Licence
 
-MIT. See [LICENSE](LICENSE). The base TCI notice is reproduced in TCI-X.md, Appendix B.
+MIT. See [LICENSE](LICENSE). TCI-X is derived from the TCI Protocol v2.0, Copyright (c) 2023 "Expert Group" LLC, Taganrog, which is published under the same MIT notice. That notice is reproduced in [TCI-X.md, Appendix B](TCI-X.md#appendix-b-base-specification-notice).
