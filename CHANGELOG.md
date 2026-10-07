@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- `monitor:<trx>,<bool>,<pct>` (§5.5): the radio's transmit monitor, on/off and level. Added for the IC-7100 (`16 45`, `14 15`).
+
 ## Draft 0.1 (7 Oct 2026)
 
 First public draft, describing wire version `tcix:1.0` as implemented by kadrad-rig.

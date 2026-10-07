@@ -152,6 +152,7 @@ All are bidirectional unless marked. The server echoes and pushes them just like
 |---|---|---|
 | `mic_gain` | `mic_gain:<trx>,<pct>;` | |
 | `comp` | `comp:<trx>,<bool>,<pct>;` | Speech compressor on/off and level. |
+| `monitor` | `monitor:<trx>,<bool>,<pct>;` | The radio's transmit monitor (hearing your own signal) on/off and level. Base TCI's `mon_enable` and `mon_volume` are the SDR program's own monitor, in dB; this is the radio's. |
 | `vox` | `vox:<trx>,<bool>;` | |
 | `break_in` | `break_in:<trx>,<mode>;` | `off`, `semi` or `full`. |
 | `cw_pitch` | `cw_pitch:<trx>,<hz>;` | |
