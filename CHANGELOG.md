@@ -1,0 +1,11 @@
+# Changelog
+
+## Draft 0.1 (7 Oct 2026)
+
+First public draft, describing wire version `tcix:1.0` as implemented by kadrad-rig.
+
+- Base TCI v2.0 clarifications B1–B18: echoes, refusals, audio format forms and scope, sensors, TX frequency, TX ownership and safety, passband edges, implied TX source.
+- Negotiation (`tcix:`) and the capability manifest (`cap:`, `cap_end`), including `cap:support` levels.
+- Extension commands: session (`error`, `radio_state`, `power`, `audio_codec`), VFO (`vfo_select`, `vfo_equal`, `vfo_swap`, `band`), receiver front end, filters, transmitter, meters, FM and repeaters, safety (`tx_timeout`), extra modes, memories.
+- Opus-coded RX audio (`audio_codec:<trx>,opus`).
+- Drafts, not in 1.0: spectrum stream and spots, equalisers.
