@@ -110,7 +110,7 @@ All are bidirectional unless marked. The server echoes and pushes them just like
 | `error` | `error:<command>,<code>[,<text>];` | Server → client. Codes: `unsupported`, `range`, `busy` (another client owns TX), `tx_active` (not allowed while transmitting), `duplex` (key refused: a duplex offset is set outside FM, so the radio would transmit off the dial frequency), `tx_lock` (key or change refused: the TX frequency or power would fall outside the server's configured TX lock, a site limit such as one dummy load's frequency and power), `radio` (the radio rejected or didn't answer), `timeout`. |
 | `radio_state` | `radio_state:<state>;` | Server → client: `connected`, `no_response`, `powered_off`, `port_lost`. |
 | `power` | `power:<bool>;` | Radio power on/off, where the radio supports it. |
-| `dial_lock` | `dial_lock:<bool>;` | The radio's own dial lock: its front-panel tuning is locked. Tuning over TCI still works. One for the radio, so no trx index. |
+| `dial_lock` | `dial_lock:<bool>;` | The radio's own dial lock: its front-panel tuning is locked. Tuning over TCI still works, but a client with a dial of its own should stop it too while the lock is on, so the lock means the same everywhere. One for the radio, so no trx index. |
 | `audio_codec` | `audio_codec:<trx>,pcm\|opus;` | RX audio coding for this connection (B5), offered as `cap:audio_codec,rw,enum,pcm,opus`. Both forms, as B4. `opus` takes `audio_samplerate` (8/12/24/48 kHz) but ignores `audio_stream_channels`, `audio_stream_sample_type` and `audio_stream_samples`: blocks are mono, one packet each (§6). Default `pcm`. TX audio stays PCM. |
 
 ### 5.2 VFO
