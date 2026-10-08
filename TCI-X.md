@@ -120,6 +120,7 @@ All are bidirectional unless marked. The server echoes and pushes them just like
 | `vfo_select` | `vfo_select:<trx>,<ch>;` | Which VFO is active (A = 0, B = 1). |
 | `vfo_equal` | `vfo_equal:<trx>;` | Action: A=B. |
 | `vfo_swap` | `vfo_swap:<trx>;` | Action: A↔B. |
+| `tx_watch` | `tx_watch:<trx>,<bool>;` | Listen on the transmit frequency while it differs from the receive one (split): Icom XFC, Yaesu TXW. |
 | `band` | `band:<trx>,<name>;` | The radio's band key, using the radio's own band stack: the server saves where the radio is into the current band's latest stack entry, then applies the named band's latest entry (frequency, mode, filter, DATA; duplex and tone in FM only). The radio's stack stays the one record, so its own band key agrees. Write-only; the server echoes `band:<trx>,<name>` and pushes the new `vfo`/`modulation`. Names come from `cap:band,w,enum,160m,…`; a band the list lacks (the IC-7100 has no 60 m stack) is the client's to handle. |
 
 ### 5.3 Receiver front end
@@ -213,6 +214,16 @@ Settings the radio keeps per mode, or per preset, in its menus: the operator set
 | `eq` | `eq:<trx>,<path>,<set>,<source>,<v1>,…,<vn>;` | Receive (`rx`) or transmit (`tx`) equaliser or tone controls, as in [drafts/eq.md](drafts/eq.md) §3: `cap:eq.<path>,<access>,eq,<min>,<max>,<step>,<unit>,<band>,…;` and `cap:eq.<path>.sets,r,info,<set>,…;`. Icom tone controls: `cap:eq.rx,rw,eq,-5,5,1,step,bass,treble;`. `source` is `radio`, `sent` or `unknown`, and empty in a client's write. |
 | `rx_audio_filter` | `rx_audio_filter:<trx>,<set>,<low_hz>,<high_hz>;` | The receive audio high-pass (`low_hz`) and low-pass (`high_hz`) edges, `0` for an edge that is off (Icom: "through"). `cap:rx_audio_filter,rw,edges,hz;`, with the values each edge can take in `cap:rx_audio_filter.low,r,info,…;` and `cap:rx_audio_filter.high,r,info,…;`, and the sets in `cap:rx_audio_filter.sets,r,info,…;`. `low_hz` must be below `high_hz` unless either is `0`. |
 | `tx_bandwidth_edges` | `tx_bandwidth_edges:<trx>,<preset>,<low_hz>,<high_hz>;` | The edges of each `tx_bandwidth` preset (§5.5), plus `data` where the radio has a separate SSB-DATA bandwidth. Caps as `rx_audio_filter`: `edges`, then `.low`, `.high` and `.sets` (the presets). |
+
+### 5.12 Scan
+
+The radio's own scans. Radios can't report whether one is running, so these are write-only (`w`), and a client shouldn't show a scan as running from its own request alone: the frequency moving is what shows it.
+
+| Command | Form | Notes |
+|---|---|---|
+| `scan` | `scan:<trx>,<kind>;` | Start a scan, or `stop`. Kinds from `cap:scan,w,enum,stop,…`: `programmed` (between the radio's programmed edges), `delta_f` (around the frequency, ± `scan_span`), `fine_programmed`, `fine_delta_f` (slowing on a signal), `memory`, `select_memory`, `mode_select` (memories in the current mode). The radio may refuse one it can't run now (no edges set, not in memory mode) with `error:scan,radio`. |
+| `scan_span` | `scan_span:<trx>,<khz>;` | The ΔF scan's half-width, from `cap:scan_span,w,enum,5,10,20,50,100,500,1000`. |
+| `scan_resume` | `scan_resume:<trx>,<bool>;` | Whether a scan resumes after stopping on a signal. |
 
 ## 6. Binary streams
 
