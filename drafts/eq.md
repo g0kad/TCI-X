@@ -1,6 +1,6 @@
 # TCI-X draft: RX and TX equalisers
 
-*Draft, not part of TCI-X 1.0 and not yet implemented. First written 3 Oct 2026. It sets out what two quite different radios offer and a command shape that should cover both, so the first one built doesn't box in the next. Comments are welcome, especially from people with radios that have parametric EQs.*
+*Draft. The command shape in §3.1–3.2 is now in TCI-X.md §5.11 (Unreleased), built first for the IC-705's tone controls; the rest (write-only sets, parametric EQ) is still open. First written 3 Oct 2026. It sets out what two quite different radios offer and a command shape that should cover both, so the first one built doesn't box in the next. Comments are welcome, especially from people with radios that have parametric EQs.*
 
 ## 1. What radios offer
 

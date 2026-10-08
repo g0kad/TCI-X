@@ -110,6 +110,7 @@ All are bidirectional unless marked. The server echoes and pushes them just like
 | `error` | `error:<command>,<code>[,<text>];` | Server → client. Codes: `unsupported`, `range`, `busy` (another client owns TX), `tx_active` (not allowed while transmitting), `duplex` (key refused: a duplex offset is set outside FM, so the radio would transmit off the dial frequency), `tx_lock` (key or change refused: the TX frequency or power would fall outside the server's configured TX lock, a site limit such as one dummy load's frequency and power), `radio` (the radio rejected or didn't answer), `timeout`. |
 | `radio_state` | `radio_state:<state>;` | Server → client: `connected`, `no_response`, `powered_off`, `port_lost`. |
 | `power` | `power:<bool>;` | Radio power on/off, where the radio supports it. |
+| `dial_lock` | `dial_lock:<bool>;` | The radio's own dial lock: its front-panel tuning is locked. Tuning over TCI still works. One for the radio, so no trx index. |
 | `audio_codec` | `audio_codec:<trx>,pcm\|opus;` | RX audio coding for this connection (B5), offered as `cap:audio_codec,rw,enum,pcm,opus`. Both forms, as B4. `opus` takes `audio_samplerate` (8/12/24/48 kHz) but ignores `audio_stream_channels`, `audio_stream_sample_type` and `audio_stream_samples`: blocks are mono, one packet each (§6). Default `pcm`. TX audio stays PCM. |
 
 ### 5.2 VFO
@@ -131,6 +132,7 @@ All are bidirectional unless marked. The server echoes and pushes them just like
 | `af_gain` | `af_gain:<trx>,<pct>;` | 0–100. The radio's own speaker and headphone level (the K3's AF GAIN), not the audio stream. |
 | `squelch` | `squelch:<trx>,<pct>;` | Squelch knob position, 0–100. The base `sql_level` is a threshold in dB, which knob-style radios can't honour. |
 | `agc_mode` | *(base)* | Base command. Its values come from the manifest enum (the base spec lists `normal,fast,off`; radios have more). |
+| `agc_time` | `agc_time:<trx>,<value>;` | The decay time of the AGC speed in use (`agc_mode`), from the manifest's enum: `off`, or seconds (`0.1`, `0.2`, …). The list can follow the mode (Icom: 0.1–6.0 s in SSB, CW and RTTY, 0.3–8.0 s in AM), and the server re-sends the cap line when it changes. Each AGC speed keeps its own time, so the server pushes `agc_time` again after `agc_mode` changes. |
 | `rx_nb_level`, `rx_nr_level` | `rx_nr_level:<trx>,<pct>;` | Levels alongside the base `rx_nb_enable` / `rx_nr_enable`. |
 | `antenna` | `antenna:<trx>,<name>;` | Enum from the manifest. |
 | `rx_antenna` | `rx_antenna:<trx>,<bool>;` | Receive on a separate receive-only input (the K3's RX ANT, with the KXV3) instead of `antenna`. Transmit stays on `antenna`. Withdrawn (`cap:rx_antenna,none`) if the radio reports it hasn't got one. |
@@ -147,6 +149,7 @@ All are bidirectional unless marked. The server echoes and pushes them just like
 | `notch_width` | `notch_width:<trx>,<name>;` | The manual notch's width, from the manifest's enum (Icom: `wide`, `mid`, `narrow`). |
 | `apf` | `apf:<trx>,<bool>;` | Audio peaking filter (CW). |
 | `filter_shape` | `filter_shape:<trx>,<shape>;` | The DSP filter's skirt, from the manifest's enum (Icom: `sharp`, `soft`). |
+| `twin_peak` | `twin_peak:<trx>,<bool>;` | RTTY twin peak filter (Icom TPF). A radio may refuse it unless its RTTY tones are the standard ones (Icom: mark 2125 Hz, shift 170 Hz), with `error:twin_peak,radio`. |
 
 ### 5.5 Transmitter
 
@@ -200,6 +203,16 @@ TCI-X adds these `modulation` names where the radio has them: `cwr`, `rtty`, `rt
 | `memory_recall` | `memory_recall:<trx>,<channel>;` | Recall into the VFO: the radio stays in VFO mode with the channel's frequency, mode, duplex and tone. The server pushes the resulting `vfo`, `modulation`, `duplex` and `tone`, then echoes `memory_recall`. |
 | `memory_mode` | `memory_mode:<trx>,<bool>[,<channel>];` | The radio's own memory mode (Icom V/M): on, on a channel, or back to VFO mode. Memories are selected, never written. On radios that can't report V/M (IC-7100), the server reports what it last set. While it's on, the server refuses to retune the VFO (`error:vfo,range`). |
 | `memory_clear` | `memory_clear:<trx>,<channel>;` | |
+
+### 5.11 Audio shaping
+
+Settings the radio keeps per mode, or per preset, in its menus: the operator sets each one up rather than working it, so a client edits any set, not only the one in use. The set names are the radio's, listed in a `.sets` info line. Which set applies in which mode is the radio's own rule (Icom: `ssb` covers LSB, USB and their DATA forms).
+
+| Command | Form | Notes |
+|---|---|---|
+| `eq` | `eq:<trx>,<path>,<set>,<source>,<v1>,…,<vn>;` | Receive (`rx`) or transmit (`tx`) equaliser or tone controls, as in [drafts/eq.md](drafts/eq.md) §3: `cap:eq.<path>,<access>,eq,<min>,<max>,<step>,<unit>,<band>,…;` and `cap:eq.<path>.sets,r,info,<set>,…;`. Icom tone controls: `cap:eq.rx,rw,eq,-5,5,1,step,bass,treble;`. `source` is `radio`, `sent` or `unknown`, and empty in a client's write. |
+| `rx_audio_filter` | `rx_audio_filter:<trx>,<set>,<low_hz>,<high_hz>;` | The receive audio high-pass (`low_hz`) and low-pass (`high_hz`) edges, `0` for an edge that is off (Icom: "through"). `cap:rx_audio_filter,rw,edges,hz;`, with the values each edge can take in `cap:rx_audio_filter.low,r,info,…;` and `cap:rx_audio_filter.high,r,info,…;`, and the sets in `cap:rx_audio_filter.sets,r,info,…;`. `low_hz` must be below `high_hz` unless either is `0`. |
+| `tx_bandwidth_edges` | `tx_bandwidth_edges:<trx>,<preset>,<low_hz>,<high_hz>;` | The edges of each `tx_bandwidth` preset (§5.5), plus `data` where the radio has a separate SSB-DATA bandwidth. Caps as `rx_audio_filter`: `edges`, then `.low`, `.high` and `.sets` (the presets). |
 
 ## 6. Binary streams
 

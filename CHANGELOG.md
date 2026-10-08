@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- `dial_lock` (§5.1), `agc_time` (§5.3) and `twin_peak` (§5.4). Added for the IC-705 (`16 50`, `1A 04`, `16 4F`).
+- New §5.11, audio shaping: `eq` (from drafts/eq.md), `rx_audio_filter` and `tx_bandwidth_edges`, settings kept per mode or preset. Added for the IC-705 (`1A 05`: RX HPF/LPF, RX and TX tone, TBW edges).
 - `monitor:<trx>,<bool>,<pct>` (§5.5): the radio's transmit monitor, on/off and level. Added for the IC-7100 (`16 45`, `14 15`).
 - `notch` (§5.4): `<hz>` is the audio frequency cut, and the range may follow the mode. New `notch_width` (§5.4). Added for the IC-7100 (`16 48`, `14 0D`, `16 57`).
 - `vox_gain`, `anti_vox`, `break_in_delay` and `tx_bandwidth` (§5.5), and `filter_shape` (§5.4). Added for the IC-7100 (`14 16`, `14 17`, `14 0F`, `16 58`, `16 56`).
