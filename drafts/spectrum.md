@@ -1,6 +1,6 @@
 # TCI-X draft: spectrum (panadapter) stream
 
-*Draft, not part of TCI-X 1.0. First written 6 Oct 2026. The reference server implements it for FlexRadio 6000/8000 (`spectrum_enable`, `spectrum_span`, `spectrum_center`, `spectrum_edges`, the `0x100` frames, and `cap:spectrum_edges,r,info`), and for the Icom scope radios from Icom's CI-V reference (not yet tried on a radio). `spectrum_mode` and `spectrum_ref` are not built yet. Comments are welcome before this goes into a minor version.*
+*Draft, not part of TCI-X 1.0. First written 6 Oct 2026. The reference server implements it for FlexRadio 6000/8000 (`spectrum_enable`, `spectrum_span`, `spectrum_center`, `spectrum_edges`, the `0x100` frames, and `cap:spectrum_edges,r,info`), and for the Icom scope radios from Icom's CI-V reference (not yet tried on a radio). `spectrum_ref`, `spectrum_speed` and `spectrum_hold` are built for the IC-705 (8 Oct 2026); `spectrum_mode` is not built yet. Comments are welcome before this goes into a minor version.*
 
 ## 1. What radios offer
 
@@ -33,6 +33,8 @@ cap:spectrum_span,rw,range,<min_hz>,<max_hz>,<step_hz>;  (radios with any span)
 cap:spectrum_center,rw,range,<lo>,<hi>,1,hz;             (only where the view can move without retuning)
 cap:spectrum_mode,rw,enum,center,fixed;                  (only where the radio has both)
 cap:spectrum_ref,rw,range,<min_db>,<max_db>,<step_db>;   (only where adjustable)
+cap:spectrum_speed,rw,enum,fast,mid,slow;                (the radio's sweep speed, where it has one)
+cap:spectrum_hold,rw,bool;                               (freeze the display, where the radio can)
 cap:spectrum_edges,r,info;
 ```
 
@@ -47,7 +49,9 @@ cap:spectrum_edges,r,info;
 | `spectrum_mode` | `spectrum_mode:<trx>,center\|fixed;` | Radio state, where the radio has both. |
 | `spectrum_center` | `spectrum_center:<trx>,<hz>;` | Radio state: moves the view without retuning (a drag on the panadapter). Pushed with `spectrum_edges`. |
 | `spectrum_edges` | `spectrum_edges:<trx>,<low_hz>,<high_hz>;` | Pushed whenever the displayed range changes (tuning in centre mode, a span change). Writable in fixed mode only. |
-| `spectrum_ref` | `spectrum_ref:<trx>,<db>;` | Radio state, where adjustable. |
+| `spectrum_ref` | `spectrum_ref:<trx>,<db>;` | Radio state, where adjustable: the scope's reference level, in dB with one decimal (the IC-705: −20.0 to +20.0 in 0.5 dB steps). |
+| `spectrum_speed` | `spectrum_speed:<trx>,<speed>;` | Radio state: how fast the radio sweeps (Icom FAST/MID/SLOW). It sets how many rows a second the radio can give, whatever `spectrum_enable` asks. |
+| `spectrum_hold` | `spectrum_hold:<trx>,<bool>;` | Radio state: the radio's scope hold (freeze). |
 
 Tuning from the panadapter is the ordinary `vfo` command; nothing new is needed.
 
