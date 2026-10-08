@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- `error` codes (§5.1): `tx_audio`, `tx_timer` and `tx_where`, so a client can say why a key-up was refused. Added for the IC-705 (MOD input `1A 05 0118`/`0119`, Time-Out Timer over WLAN, TX frequency `1C 03`).
 - `tone` (§5.7): `dtcs` takes the three-digit code, with the codes in `cap:dtcs_codes`. Built for the IC-705 (`16 4B`, `1B 02`).
 - `atu` and `atu_tune` (§5.5): the antenna tuner, and a tune that transmits under the same checks as keying. Added for the IC-705 with an AH-705 (`1C 01`).
 - `tx_watch` (§5.2), and a new §5.12 Scan: `scan`, `scan_span`, `scan_resume`, write-only. Added for the IC-705 (`1C 02`, `0E`).
