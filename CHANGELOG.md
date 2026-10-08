@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- `tone` (§5.7): `dtcs` takes the three-digit code, with the codes in `cap:dtcs_codes`. Built for the IC-705 (`16 4B`, `1B 02`).
 - `atu` and `atu_tune` (§5.5): the antenna tuner, and a tune that transmits under the same checks as keying. Added for the IC-705 with an AH-705 (`1C 01`).
 - `tx_watch` (§5.2), and a new §5.12 Scan: `scan`, `scan_span`, `scan_resume`, write-only. Added for the IC-705 (`1C 02`, `0E`).
 - `dial_lock` (§5.1), `agc_time` (§5.3) and `twin_peak` (§5.4). Added for the IC-705 (`16 50`, `1A 04`, `16 4F`).

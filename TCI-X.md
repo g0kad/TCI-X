@@ -185,7 +185,7 @@ Names: `alc` (%), `comp` (dB), `vd` (V), `id` (A), `po` (W), `swr` (ratio), `s` 
 | Command | Form | Notes |
 |---|---|---|
 | `duplex` | `duplex:<trx>,<dir>,<offset_hz>;` | `dir`: `simplex`, `minus` or `plus`. |
-| `tone` | `tone:<trx>,<mode>,<hz>;` | `mode`: `off`, `tone` (CTCSS encode), `tsql` or `dtcs`. For `dtcs`, the value is the code, not Hz. The reply carries the frequency of the active mode (the encode tone when `off`). The tones the radio accepts are listed in `cap:tone_hz,r,info,67.0,69.3,…;`. |
+| `tone` | `tone:<trx>,<mode>,<hz>;` | `mode`: `off`, `tone` (CTCSS encode), `tsql` or `dtcs`. For `dtcs`, the value is the three-digit code (`023`), not Hz; its polarity stays the radio's. The reply carries the frequency of the active mode (the encode tone when `off`). The tones the radio accepts are listed in `cap:tone_hz,r,info,67.0,69.3,…;`, and its DTCS codes in `cap:dtcs_codes,r,info,023,025,…;`. |
 
 ### 5.8 Safety
 
