@@ -167,6 +167,8 @@ All are bidirectional unless marked. The server echoes and pushes them just like
 | `cw_pitch` | `cw_pitch:<trx>,<hz>;` | |
 | `essb` | `essb:<trx>,<bool>;` | Extended SSB: a wider TX bandwidth (the K3's 3.0–4.0 kHz). |
 | `tx_bandwidth` | `tx_bandwidth:<trx>,<name>;` | The SSB transmit bandwidth preset, from the manifest's enum (Icom TBW: `wide`, `mid`, `narrow`). |
+| `atu` | `atu:<trx>,<bool>;` | The antenna tuner in or bypassed (Icom `1C 01`, with an external tuner such as the AH-705). |
+| `atu_tune` | `atu_tune:<trx>;` | Action: start a tune. **It transmits**: the server applies the same checks as keying (`trx`): another client owning TX is `busy`, an unknown TX frequency is `radio`, a TX lock or a receive-only radio refuses it. The radio keys itself and drops back when the tuner is done; `trx` pushes show it, and the server's TX timeout applies. |
 | `data_mode` | `data_mode:<trx>,<bool>[,<filter>];` | For radios where DATA is a flag on top of the mode (Icom `1A 06`). `digu`/`digl` in `modulation` set it too. |
 
 ### 5.6 Meters

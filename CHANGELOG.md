@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- `atu` and `atu_tune` (§5.5): the antenna tuner, and a tune that transmits under the same checks as keying. Added for the IC-705 with an AH-705 (`1C 01`).
 - `tx_watch` (§5.2), and a new §5.12 Scan: `scan`, `scan_span`, `scan_resume`, write-only. Added for the IC-705 (`1C 02`, `0E`).
 - `dial_lock` (§5.1), `agc_time` (§5.3) and `twin_peak` (§5.4). Added for the IC-705 (`16 50`, `1A 04`, `16 4F`).
 - New §5.11, audio shaping: `eq` (from drafts/eq.md), `rx_audio_filter` and `tx_bandwidth_edges`, settings kept per mode or preset. Added for the IC-705 (`1A 05`: RX HPF/LPF, RX and TX tone, TBW edges).
