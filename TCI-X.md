@@ -170,6 +170,7 @@ All are bidirectional unless marked. The server echoes and pushes them just like
 | `atu` | `atu:<trx>,<bool>;` | The antenna tuner in or bypassed (Icom `1C 01`, with an external tuner such as the AH-705). |
 | `atu_tune` | `atu_tune:<trx>;` | Action: start a tune. **It transmits**: the server applies the same checks as keying (`trx`): another client owning TX is `busy`, an unknown TX frequency is `radio`, a TX lock or a receive-only radio refuses it. The radio keys itself and drops back when the tuner is done; `trx` pushes show it, and the server's TX timeout applies. |
 | `data_mode` | `data_mode:<trx>,<bool>[,<filter>];` | For radios where DATA is a flag on top of the mode (Icom `1A 06`). `digu`/`digl` in `modulation` set it too. |
+| `cw_memory` | `cw_memory:<trx>,<slot>[,<text>];` | The radio's CW keyer memories (Icom `1A 02`, M1–M8). With no text, a read; with text, a write, and an empty text clears the slot. The server answers with the slot as the radio holds it. `text` is percent-encoded. The manifest gives the slots and the length: `cap:cw_memory,rw,info,8,70;`. Characters the keyer can't hold are refused (`range`). Storing never transmits; a client sends a memory's text with `cw_macros`. |
 
 ### 5.6 Meters
 
@@ -202,10 +203,10 @@ TCI-X adds these `modulation` names where the radio has them: `cwr`, `rtty`, `rt
 | Command | Form | Notes |
 |---|---|---|
 | `memory_list` | `memory_list:<trx>[,refresh];` → one `memory` line per channel, then `memory_list_end:<trx>;` | Read the channel table. The server may send lines as it reads the radio, and cache them. `refresh` reads the radio again. |
-| `memory` | `memory:<trx>,<channel>,<name>,<rx_hz>,<mode>,<duplex_dir>,<offset_hz>,<tone_mode>,<tone_hz>;` | One channel. `channel` is an opaque id from the server (`2-01` on Icom: group 2, channel 1). `name` is percent-encoded. Empty channels are omitted. A write stores the channel, if the manifest allows `w`. |
+| `memory` | `memory:<trx>,<channel>,<name>,<rx_hz>,<mode>,<duplex_dir>,<offset_hz>,<tone_mode>,<tone_hz>;` | One channel. `channel` is an opaque id from the server (`2-01` on Icom: group 2, channel 1). `name` is percent-encoded. Empty channels are omitted. A write stores the channel when the manifest has `cap:memory,w,action`; the server answers with the channel as the radio then holds it. |
 | `memory_recall` | `memory_recall:<trx>,<channel>;` | Recall into the VFO: the radio stays in VFO mode with the channel's frequency, mode, duplex and tone. The server pushes the resulting `vfo`, `modulation`, `duplex` and `tone`, then echoes `memory_recall`. |
 | `memory_mode` | `memory_mode:<trx>,<bool>[,<channel>];` | The radio's own memory mode (Icom V/M): on, on a channel, or back to VFO mode. Memories are selected, never written. On radios that can't report V/M (IC-7100), the server reports what it last set. While it's on, the server refuses to retune the VFO (`error:vfo,range`). |
-| `memory_clear` | `memory_clear:<trx>,<channel>;` | |
+| `memory_clear` | `memory_clear:<trx>,<channel>;` | Empties a channel, where the manifest has `cap:memory_clear,w,action`. Echoed when done. |
 
 ### 5.11 Audio shaping
 
