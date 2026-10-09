@@ -1,0 +1,10 @@
+cap:rot,r,info,Idiom Press,Rotor-EZ
+cap:rot_state,r,enum,connected,no_response,unreachable
+cap:rot_heading,r,range,0,360,1,deg
+cap:rot_target,r,info
+cap:rot_turn,w,range,0,360,1,deg
+---
+rot_state:connected
+rot_heading:185
+rot_target:228
+rot_target:
