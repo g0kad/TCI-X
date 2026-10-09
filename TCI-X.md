@@ -107,7 +107,7 @@ All are bidirectional unless marked. The server echoes and pushes them just like
 | Command | Form | Notes |
 |---|---|---|
 | `tcix` | `tcix:<version>;` | Opt-in (§4.1). |
-| `error` | `error:<command>,<code>[,<text>];` | Server → client. Codes: `unsupported`, `range`, `busy` (another client owns TX), `tx_active` (not allowed while transmitting), `duplex` (key refused: a duplex offset is set outside FM, so the radio would transmit off the dial frequency), `tx_lock` (key or change refused: the TX frequency or power would fall outside the server's configured TX lock, a site limit such as one dummy load's frequency and power), `tx_audio` (key with `tci` audio refused: the radio's audio input wouldn't take the client's audio over this link), `tx_timer` (key refused: over a network link that can drop while keyed, the radio's own TX timer is off), `tx_where` (key refused: the radio reports a TX frequency other than the server's), `radio` (the radio rejected or didn't answer), `timeout`. |
+| `error` | `error:<command>,<code>[,<text>];` | Server → client. Codes: `unsupported`, `range`, `busy` (another client owns TX), `tx_active` (not allowed while transmitting), `duplex` (key refused: a duplex offset is set outside FM, so the radio would transmit off the dial frequency), `tx_lock` (key or change refused: the TX frequency or power would fall outside the server's configured TX lock, a site limit such as one dummy load's frequency and power), `tx_audio` (key with `tci` audio refused: the radio's audio input wouldn't take the client's audio over this link), `tx_timer` (key refused: over a network link that can drop while keyed, the radio's own TX timer is off), `tx_where` (key refused: the radio reports a TX frequency other than the server's), `radio` (the radio rejected or didn't answer), `device` (an amplifier or rotator, or the program that owns it, refused or can't be reached; the text says why, e.g. someone else is in control of it, §5.13–5.14), `timeout`. |
 | `radio_state` | `radio_state:<state>;` | Server → client: `connected`, `no_response`, `powered_off`, `port_lost`. |
 | `power` | `power:<bool>;` | Radio power on/off, where the radio supports it. |
 | `dial_lock` | `dial_lock:<bool>;` | The radio's own dial lock: its front-panel tuning is locked. Tuning over TCI still works, but a client with a dial of its own should stop it too while the lock is on, so the lock means the same everywhere. One for the radio, so no trx index. |
@@ -230,7 +230,7 @@ The radio's own scans. Radios can't report whether one is running, so these are 
 
 ### 5.13 External amplifier
 
-A linear amplifier in the station's transmit path, which the server reads from the amplifier's own controller (a serial port, or a program that owns that port). The radio's `po` and `swr` meters show what goes into the amplifier. These show what goes to the antenna. Read-only in this version: the amplifier is operated from its own controls or its own program.
+A linear amplifier in the station's transmit path, which the server reads from the amplifier's own controller (a serial port, or a program that owns that port). The radio's `po` and `swr` meters show what goes into the amplifier. These show what goes to the antenna. Read-only except Operate/Standby (`amp_operate`): everything else is done from the amplifier's own controls or its own program.
 
 A server that's set up with an amplifier announces it in the manifest, and keeps the announcement while the amplifier isn't answering. `amp_state` says whether the readings are live.
 
@@ -241,7 +241,7 @@ cap:amp,r,info,<maker>,<model>,<rated_w>;        e.g. cap:amp,r,info,SPE,Expert 
 | Command | Form | Notes |
 |---|---|---|
 | `amp_state` | `amp_state:<state>;` | Server → client: `connected` (readings are live), `no_response` (the amplifier, or the program that owns its port, is reachable but the amplifier isn't answering, e.g. it's switched off), `unreachable` (the server can't reach the amplifier's controller). While it isn't `connected`, a client should show the amplifier's readings as unavailable, not as zero. |
-| `amp_operate` | `amp_operate:<bool>;` | Read-only. `true` in Operate (the amplifier amplifies), `false` in Standby (RF passes through). |
+| `amp_operate` | `amp_operate:<bool>;` | `true` in Operate (the amplifier amplifies), `false` in Standby (RF passes through). A client may write it where the manifest says `rw`: the server asks the amplifier's controller to switch, and the push of the new state is the answer. Refused with `device` while the amplifier isn't `connected`, or while its controller won't take the change (someone else is in control of it there), and with `tx_active` while the amplifier transmits. |
 | `amp_tx` | `amp_tx:<bool>;` | Read-only. The amplifier reports it is transmitting. |
 | `amp_power_level` | `amp_power_level:<level>;` | Read-only. The amplifier's power setting, from `cap:amp_power_level,r,enum,…` (SPE: `low`, `mid`, `high`). |
 | `amp_band` | `amp_band:<name>;` | Read-only. The band the amplifier is set to, with names as in `band` (§5.2). A client may warn when it differs from the radio's. |
@@ -268,7 +268,7 @@ The manifest lists every command above, so a client can gate on it (§4.2). For 
 ```
 cap:amp,r,info,SPE,Expert 1.3K-FA,1300;
 cap:amp_state,r,enum,connected,no_response,unreachable;
-cap:amp_operate,r,bool;
+cap:amp_operate,rw,bool;
 cap:amp_tx,r,bool;
 cap:amp_power_level,r,enum,low,mid,high;
 cap:amp_band,r,enum,160m,80m,60m,40m,30m,20m,17m,15m,12m,10m,6m,4m;
@@ -286,6 +286,29 @@ cap:meter.amp_temp_combiner,r,meter,c,0,100;
 ```
 
 `amp_antenna`'s list gives the antenna numbers; its tuner value is always one of `on`, `bypass` and `none`. `amp_warning` and `amp_alarm` carry text, so their lines list no values. Temperatures use the unit `c` (°C). After `cap_end`, the state push includes `amp_state` and every amplifier value known so far.
+
+### 5.14 Antenna rotator
+
+An antenna rotator, which the server reads and turns through the rotator's own controller (a serial port, or a program that owns that port). Bearings are whole degrees clockwise from north, 0–360.
+
+A server that's set up with a rotator announces it in the manifest, and keeps the announcement while the rotator isn't answering:
+
+```
+cap:rot,r,info,<maker>,<model>;                    e.g. cap:rot,r,info,Idiom Press,Rotor-EZ;
+cap:rot_state,r,enum,connected,no_response,unreachable;
+cap:rot_heading,r,range,0,360,1,deg;
+cap:rot_target,r,info;
+cap:rot_turn,w,range,0,360,1,deg;
+```
+
+| Command | Form | Notes |
+|---|---|---|
+| `rot_state` | `rot_state:<state>;` | Server → client, as `amp_state` (§5.13): `connected` (readings are live), `no_response` (the rotator's controller is reachable but the rotator isn't answering), `unreachable`. While it isn't `connected`, a client should show the heading as unavailable. |
+| `rot_heading` | `rot_heading:<deg>;` | Read-only. Where the antenna points, pushed when it changes. |
+| `rot_target` | `rot_target:<deg>;` | Read-only. Where the antenna is turning to, or empty when it isn't turning. It clears when the antenna gets there (whoever asked for the turn: a client, the controller's own page, or another program). |
+| `rot_turn` | `rot_turn:<deg>;` | Write-only. Turn the antenna to a bearing; `rot_target` and then `rot_heading` pushes are the answer. Refused with `range` for a bearing outside 0–360, and with `device` while the rotator isn't `connected` or its controller won't take the turn (someone else is in control of it there). |
+
+A rotator is TCI-X only, and one per server: no trx index.
 
 ## 6. Binary streams
 
