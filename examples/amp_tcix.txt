@@ -1,0 +1,27 @@
+cap:amp,r,info,SPE,Expert 1.3K-FA,1300
+cap:amp_state,r,enum,connected,no_response,unreachable
+cap:amp_operate,r,bool
+cap:amp_tx,r,bool
+cap:amp_power_level,r,enum,low,mid,high
+cap:amp_band,r,enum,160m,80m,60m,40m,30m,20m,17m,15m,12m,10m,6m,4m
+cap:amp_input,r,enum,1,2
+cap:amp_antenna,r,enum,1,2,3,4
+cap:amp_warning,r,info
+cap:amp_alarm,r,info
+cap:meter.amp_po,r,meter,w,0,1300
+cap:meter.amp_swr,r,meter,ratio,1,5,3
+cap:meter.amp_swr_ant,r,meter,ratio,1,5,3
+cap:meter.amp_vd,r,meter,v,0,60
+cap:meter.amp_id,r,meter,a,0,40
+cap:meter.amp_temp,r,meter,c,0,100
+cap:meter.amp_temp_combiner,r,meter,c,0,100
+---
+amp_state:connected
+amp_operate:true
+amp_tx:true
+amp_power_level:mid
+amp_band:20m
+amp_input:1
+amp_antenna:2,bypass
+amp_warning:
+amp_alarm:

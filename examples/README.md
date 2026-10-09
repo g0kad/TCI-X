@@ -16,5 +16,6 @@ The `;` terminators are left off, one command per line. Radio state (frequencies
 | [qmx_tcix.txt](qmx_tcix.txt) | QRP Labs QMX+ | A small QRP radio: a short manifest. |
 | [ftdx10_tcix.txt](ftdx10_tcix.txt) | Yaesu FTDX10 | `cap:support,r,info,documentation`: written from the manual, receive-only. |
 | [flex_tcix.txt](flex_tcix.txt) | FlexRadio 6000/8000 | Over IP (the SmartSDR API). The radio describes itself, so there's no model file. Shown with transmit not enabled (`receive_only:true`). |
+| [amp_tcix.txt](amp_tcix.txt) | SPE Expert 1.3K-FA (amplifier) | Not a radio: the lines a server adds for an external amplifier (§5.13). Its two parts are the `cap:` lines, which go before `cap_end`, and the values in the state push after it, here with the amplifier answering, in Operate and transmitting. |
 
 The `cap` lines are the best guide to how a server describes a radio. For example, the attenuator is `0,12` dB on the IC-7100, `0,10` on the K3 and `0,6,12,18` on the FTDX10, and the QMX+ has none, so it has no line at all. The `cap:rated_power` lines differ the same way.
