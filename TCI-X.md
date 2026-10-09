@@ -179,7 +179,7 @@ meter:<trx>,<name>,<value>;          server → client
 meters_enable:<bool>[,<interval_ms>];  client → server
 ```
 
-Names: `alc` (%), `comp` (dB), `vd` (V), `id` (A), `po` (W), `swr` (ratio), `s` (dBm), `temp` (°C). The manifest's `cap:meter.<name>` line gives the unit, the scale and the red zone. This is a generic channel, so new meters don't need new commands. `s`, `po` and `swr` are **also** sent in the base `rx_channel_sensors` / `tx_sensors` (B7, B8) for base clients.
+Names: `alc` (%), `comp` (dB), `vd` (V), `id` (A), `po` (W), `swr` (ratio), `s` (dBm), `temp` (°C), and an external amplifier's `amp_…` meters (§5.13). The manifest's `cap:meter.<name>` line gives the unit, the scale and the red zone. This is a generic channel, so new meters don't need new commands. `s`, `po` and `swr` are **also** sent in the base `rx_channel_sensors` / `tx_sensors` (B7, B8) for base clients.
 
 ### 5.7 FM and repeaters
 
@@ -228,6 +228,41 @@ The radio's own scans. Radios can't report whether one is running, so these are 
 | `scan_span` | `scan_span:<trx>,<khz>;` | The ΔF scan's half-width, from `cap:scan_span,w,enum,5,10,20,50,100,500,1000`. |
 | `scan_resume` | `scan_resume:<trx>,<bool>;` | Whether a scan resumes after stopping on a signal. |
 
+### 5.13 External amplifier
+
+A linear amplifier in the station's transmit path, which the server reads from the amplifier's own controller (a serial port, or a program that owns that port). The radio's `po` and `swr` meters show what goes into the amplifier. These show what goes to the antenna. Read-only in this version: the amplifier is operated from its own controls or its own program.
+
+A server that's set up with an amplifier announces it in the manifest, and keeps the announcement while the amplifier isn't answering. `amp_state` says whether the readings are live.
+
+```
+cap:amp,r,info,<maker>,<model>,<rated_w>;        e.g. cap:amp,r,info,SPE,Expert 1.3K-FA,1300;
+```
+
+| Command | Form | Notes |
+|---|---|---|
+| `amp_state` | `amp_state:<state>;` | Server → client: `connected` (readings are live), `no_response` (the amplifier, or the program that owns its port, is reachable but the amplifier isn't answering, e.g. it's switched off), `unreachable` (the server can't reach the amplifier's controller). While it isn't `connected`, a client should show the amplifier's readings as unavailable, not as zero. |
+| `amp_operate` | `amp_operate:<bool>;` | Read-only. `true` in Operate (the amplifier amplifies), `false` in Standby (RF passes through). |
+| `amp_tx` | `amp_tx:<bool>;` | Read-only. The amplifier reports it is transmitting. |
+| `amp_power_level` | `amp_power_level:<level>;` | Read-only. The amplifier's power setting, from `cap:amp_power_level,r,enum,…` (SPE: `low`, `mid`, `high`). |
+| `amp_band` | `amp_band:<name>;` | Read-only. The band the amplifier is set to, with names as in `band` (§5.2). A client may warn when it differs from the radio's. |
+| `amp_input` | `amp_input:<n>;` | Read-only. Which of the amplifier's inputs (radios) is selected, numbered as on the amplifier. |
+| `amp_antenna` | `amp_antenna:<n>,<atu>;` | Read-only. The amplifier's transmit antenna, numbered as on the amplifier, and its tuner: `on`, `bypass` or `none`. |
+| `amp_warning` | `amp_warning:<text>;` | Read-only. The amplifier's current warning in its own words (percent-encoded), or empty when there's none. A warning doesn't stop the amplifier (SPE: `ATU BYPASSED`, `OVERHEATING`). |
+| `amp_alarm` | `amp_alarm:<text>;` | Read-only. The amplifier's current alarm, or empty when there's none. An alarm means the amplifier has protected itself (SPE: `SWR EXCEEDING LIMITS`, `INPUT OVERDRIVING`). |
+
+The amplifier's readings are meters (§5.6) on the trx it belongs to, named `amp_<name>`, each with its `cap:meter.amp_<name>` line:
+
+| Meter | Unit | What it reads |
+|---|---|---|
+| `amp_po` | W | Output power. |
+| `amp_swr` | ratio | The SWR the amplifier sees (after its tuner, if any). |
+| `amp_swr_ant` | ratio | The antenna's SWR before the tuner, where the amplifier measures it. |
+| `amp_vd` | V | PA supply voltage. |
+| `amp_id` | A | PA current. |
+| `amp_temp` | °C | The hottest PA temperature sensor. |
+
+A server may add other `amp_<name>` meters (SPE: `amp_temp_combiner`); the manifest describes each one. Amplifier meters are TCI-X only: the base `tx_sensors` keep the radio's own readings.
+
 ## 6. Binary streams
 
 These are unchanged from the base spec, except for RX audio after `audio_codec:0,opus` (§5.1). Each RX_AUDIO block then carries one Opus packet (RFC 6716) as its payload, with `codec` = 1 (0 is PCM, as in base TCI), `channels` = 1, `sample_rate` the rate it decodes to, and `length` the samples it decodes to, as for PCM. The packet's size is the payload's: the message length less the 64-byte header. The reference server sends 40 ms packets at 24 kbit/s (voice, up to 8 kHz wide): about 40 kbit/s with the headers, against 0.2 Mbit/s for 12 kHz int16. Base clients never see Opus: they can't ask for it.
@@ -244,6 +279,7 @@ The document version and the wire version are separate. Drafts 0.x of this docum
 - **Collisions with future base commands.** If a later TCI adds a command with one of our names but different arguments, the base meaning wins, and TCI-X renames its own in a major version.
 - **Spectrum scope data** (for radios that output it: the Flex, IC-7300, IC-705) is left out of 1.0. Draft, not in 1.0: a per-connection binary stream for panadapter clients, plus spots kept by the server. See [drafts/spectrum.md](drafts/spectrum.md).
 - **RX and TX equalisers** (draft, not in 1.0): one `eq` command for graphic EQs and tone controls, with write-only EQs (the K3's TX EQ) marked as such. See [drafts/eq.md](drafts/eq.md).
+- **Amplifier control and interlocks.** §5.13 only reads the amplifier. Operate/Standby and tune from a TCI-X client, and a server refusing a key-up while the amplifier is in alarm (a new `error` code), are left for later.
 - **Authentication** for servers reachable beyond localhost. TCI has none. Options include a token in the WebSocket URL or relying on a VPN.
 
 ## Appendix A. IC-7100 mapping (informative)

@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- New §5.13, external amplifier (read-only): `cap:amp`, `amp_state`, `amp_operate`, `amp_tx`, `amp_power_level`, `amp_band`, `amp_input`, `amp_antenna`, `amp_warning`, `amp_alarm`, and `amp_…` meters (§5.6). Added for an SPE Expert 1.3K-FA, read through its own control server.
+
 - `cw_memory` (§5.5): the radio's CW keyer memories, read and stored. Added for the IC-705 (`1A 02`, M1–M8).
 - `memory` writes and `memory_clear` (§5.10): announced by `cap:memory,w,action` and `cap:memory_clear,w,action`; a write is answered with the channel as stored. Added for the IC-705 (`1A 00`).
 - `error` codes (§5.1): `tx_audio`, `tx_timer` and `tx_where`, so a client can say why a key-up was refused. Added for the IC-705 (MOD input `1A 05 0118`/`0119`, Time-Out Timer over WLAN, TX frequency `1C 03`).
