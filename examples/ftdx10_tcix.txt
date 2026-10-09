@@ -1,4 +1,4 @@
-protocol:kadrad-rig,2.0
+protocol:kadrad-hub,2.0
 device:Yaesu FTDX10
 receive_only:true
 trx_count:1

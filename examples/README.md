@@ -1,6 +1,6 @@
 # Examples
 
-What the reference server (kadrad-rig) sends a client that connects and then opts in with `tcix:1.0;`. The files are the server's golden test copies: each is regenerated from the server's radio profile and checked in its test suite, so they show exactly what the server sends.
+What the reference server (kadrad-hub) sends a client that connects and then opts in with `tcix:1.0;`. The files are the server's golden test copies: each is regenerated from the server's radio profile and checked in its test suite, so they show exactly what the server sends.
 
 Each file has two parts, split by a `---` line:
 

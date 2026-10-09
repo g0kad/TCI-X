@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- The reference server is renamed from kadrad-rig to **kadrad-hub** (KADRAD, 9 Oct 2026). Its `protocol:` line is now `protocol:kadrad-hub,2.0;`; nothing else on the wire changes, and clients shouldn't rely on the server name.
+
 - New §5.13, external amplifier (read-only): `cap:amp`, `amp_state`, `amp_operate`, `amp_tx`, `amp_power_level`, `amp_band`, `amp_input`, `amp_antenna`, `amp_warning`, `amp_alarm`, and `amp_…` meters (§5.6). Added for an SPE Expert 1.3K-FA, read through its own control server.
 
 - `cw_memory` (§5.5): the radio's CW keyer memories, read and stored. Added for the IC-705 (`1A 02`, M1–M8).

@@ -23,7 +23,7 @@ TCI v2.0 is a good transport. It's one WebSocket carrying text commands and bina
 
 ## 2. Conventions
 
-- "Server" means a TCI-X server, such as `kadrad-rig`, the KADRAD project's reference server. "Base" means TCI v2.0 as published.
+- "Server" means a TCI-X server, such as `kadrad-hub`, the KADRAD project's reference server. "Base" means TCI v2.0 as published.
 - **Must**, **should** and **may** are used in the sense of RFC 2119.
 - `trx` is the transceiver index and `ch` the channel index (0 = A, 1 = B), as in the base spec.
 - **String arguments in extension commands are percent-encoded** for `%`, `:`, `,`, `;` and control characters (e.g. `name:%2C` for a comma). Base commands are unchanged; `cw_macros` text still follows the base rules.
@@ -59,7 +59,7 @@ A TCI-X server must behave as below for **base** commands. These rules come from
 
 ### 4.1 Opt-in
 
-On connect, the server sends the base init burst, ending with `ready;`, followed by the state push, exactly as in the base spec. The `protocol:` line keeps the base form (`protocol:kadrad-rig,2.0;`) so base clients parse it as before.
+On connect, the server sends the base init burst, ending with `ready;`, followed by the state push, exactly as in the base spec. The `protocol:` line keeps the base form (`protocol:kadrad-hub,2.0;`) so base clients parse it as before.
 
 A TCI-X client sends, at any time after connecting:
 

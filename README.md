@@ -32,10 +32,10 @@ TCI is a good transport: one WebSocket carrying text commands and binary audio, 
 
 ## Implementations
 
-- **kadrad-rig** (server, reference implementation): drives the radio directly over CAT, CI-V or the SmartSDR API, and serves it as TCI-X. It supports the Icom IC-7100 and IC-705, the Elecraft K3, the QRP Labs QMX+, the Yaesu FTDX10, FlexRadio 6000/8000, and radios through Hamlib's `rigctld`. Part of the KADRAD project.
+- **kadrad-hub** (server, reference implementation): drives the radio directly over CAT, CI-V or the SmartSDR API, and serves it as TCI-X. It supports the Icom IC-7100 and IC-705, the Elecraft K3, the QRP Labs QMX+, the Yaesu FTDX10, FlexRadio 6000/8000, and radios through Hamlib's `rigctld`. Part of the KADRAD project.
 - **KADRAD** (client): a TCI/TCI-X radio front panel that builds its controls from the manifest.
 
-Plain TCI clients such as WSJT-X work unchanged against kadrad-rig.
+Plain TCI clients such as WSJT-X work unchanged against kadrad-hub.
 
 If you implement TCI-X, in a server or a client, please open an issue so it can be listed here.
 
