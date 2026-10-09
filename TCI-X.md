@@ -263,6 +263,30 @@ The amplifier's readings are meters (§5.6) on the trx it belongs to, named `amp
 
 A server may add other `amp_<name>` meters (SPE: `amp_temp_combiner`); the manifest describes each one. Amplifier meters are TCI-X only: the base `tx_sensors` keep the radio's own readings.
 
+The manifest lists every command above, so a client can gate on it (§4.2). For an SPE Expert 1.3K-FA:
+
+```
+cap:amp,r,info,SPE,Expert 1.3K-FA,1300;
+cap:amp_state,r,enum,connected,no_response,unreachable;
+cap:amp_operate,r,bool;
+cap:amp_tx,r,bool;
+cap:amp_power_level,r,enum,low,mid,high;
+cap:amp_band,r,enum,160m,80m,60m,40m,30m,20m,17m,15m,12m,10m,6m,4m;
+cap:amp_input,r,enum,1,2;
+cap:amp_antenna,r,enum,1,2,3,4;
+cap:amp_warning,r,info;
+cap:amp_alarm,r,info;
+cap:meter.amp_po,r,meter,w,0,1300;
+cap:meter.amp_swr,r,meter,ratio,1,5,3;
+cap:meter.amp_swr_ant,r,meter,ratio,1,5,3;
+cap:meter.amp_vd,r,meter,v,0,60;
+cap:meter.amp_id,r,meter,a,0,40;
+cap:meter.amp_temp,r,meter,c,0,100;
+cap:meter.amp_temp_combiner,r,meter,c,0,100;
+```
+
+`amp_antenna`'s list gives the antenna numbers; its tuner value is always one of `on`, `bypass` and `none`. `amp_warning` and `amp_alarm` carry text, so their lines list no values. Temperatures use the unit `c` (°C). After `cap_end`, the state push includes `amp_state` and every amplifier value known so far.
+
 ## 6. Binary streams
 
 These are unchanged from the base spec, except for RX audio after `audio_codec:0,opus` (§5.1). Each RX_AUDIO block then carries one Opus packet (RFC 6716) as its payload, with `codec` = 1 (0 is PCM, as in base TCI), `channels` = 1, `sample_rate` the rate it decodes to, and `length` the samples it decodes to, as for PCM. The packet's size is the payload's: the message length less the 64-byte header. The reference server sends 40 ms packets at 24 kbit/s (voice, up to 8 kHz wide): about 40 kbit/s with the headers, against 0.2 Mbit/s for 12 kHz int16. Base clients never see Opus: they can't ask for it.
