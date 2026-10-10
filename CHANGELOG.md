@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- B19: base TCI's `tune` and `tune_drive` pinned down. `tune` keys the radio's tune carrier under `trx`'s checks and ownership; `tune_drive` is its power, a percentage of rated as `drive`, kept apart from it. Added for the FLEX-6000 (`transmit tune`, `tunepower`).
+- §5.13: `amp_tune` (start the amplifier's tuner) and `amp_antenna_next` (its next antenna), both actions. Added for an SPE Expert 1.3K-FA (its TUNE and ANTENNA keys).
 - New §5.14, antenna rotator: `cap:rot`, `rot_state`, `rot_heading`, `rot_target` and `rot_turn`. Added for an Idiom Press Rotor-EZ, read and turned through its own control server.
 - §5.13: `amp_operate` may be written (Operate/Standby), where the manifest says `rw`. New `error` code `device` (§5.1): an amplifier or rotator, or its controller, refused or can't be reached.
 - §5.13: the manifest lines for the amplifier commands (`cap:amp_state`, `amp_operate`, `amp_tx`, `amp_band`, `amp_input`, `amp_antenna`, `amp_warning`, `amp_alarm`, and the `amp_…` meters), with the unit `c` for temperatures. Before, only `cap:amp` and `cap:amp_power_level` were named.

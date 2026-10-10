@@ -54,6 +54,7 @@ A TCI-X server must behave as below for **base** commands. These rules come from
 | B16 | Refused base commands | Commands with no meaning for the radio (`dds`, `if`, `iq_*`, `spot*` on a radio with no scope, for example) are refused per B3 rather than dropped silently. Where the radio has a scope (`cap:spectrum`), the server keeps the spots itself and pushes them to TCI-X clients ([drafts/spectrum.md](drafts/spectrum.md) §4). |
 | B17 | Passband edges | `rx_filter_band:<trx>,<low>,<high>` gives the passband's edges in Hz from the carrier, `low < high`. Upper-sideband modes (USB, DIGU, RTTY) use positive edges, and lower-sideband modes (LSB, DIGL, RTTY-R) negative ones (LSB 300–2700 Hz is `-2700,-300`). In CW the edges are relative to the CW pitch tone, 0 being centred on it, and CW-R mirrors them. AM and FM are symmetric about 0. The server pushes the line whenever the width, centre or mode changes. A radio whose filters are only named presets doesn't offer it (use `filter`). |
 | B18 | Implied TX source | A base client (one that hasn't sent `tcix:`) that has started RX audio and keys with no source (`trx:0,true;`, as WSJT-X does) is keyed as if it had sent source `tci`: the server requests its TX audio with `TX_CHRONO`. A TCI-X client must name the source; with none, the radio uses its own audio input. |
+| B19 | Tune | `tune:<trx>,<bool>` keys the radio's own tune carrier, for an antenna tuner or an amplifier's tuner to tune on. It's keying: the server applies `trx`'s checks, and B14 and B15 apply (no TX audio is involved). `tune_drive:<trx>,<pct>` is the carrier's power, a percentage of the rated power for the current band as `drive` (B10), kept apart from `drive`. While the carrier is on, the server pushes `tune:<trx>,true` and `trx:<trx>,true`. A server whose radio has no tune carrier leaves both out of the manifest and refuses them (B3). |
 
 ## 4. Negotiation and the capability manifest
 
@@ -230,7 +231,7 @@ The radio's own scans. Radios can't report whether one is running, so these are 
 
 ### 5.13 External amplifier
 
-A linear amplifier in the station's transmit path, which the server reads from the amplifier's own controller (a serial port, or a program that owns that port). The radio's `po` and `swr` meters show what goes into the amplifier. These show what goes to the antenna. Read-only except Operate/Standby (`amp_operate`): everything else is done from the amplifier's own controls or its own program.
+A linear amplifier in the station's transmit path, which the server reads from the amplifier's own controller (a serial port, or a program that owns that port). The radio's `po` and `swr` meters show what goes into the amplifier. These show what goes to the antenna. Read-only except Operate/Standby (`amp_operate`), its tuner (`amp_tune`) and its antenna (`amp_antenna_next`): everything else is done from the amplifier's own controls or its own program.
 
 A server that's set up with an amplifier announces it in the manifest, and keeps the announcement while the amplifier isn't answering. `amp_state` says whether the readings are live.
 
@@ -247,6 +248,8 @@ cap:amp,r,info,<maker>,<model>,<rated_w>;        e.g. cap:amp,r,info,SPE,Expert 
 | `amp_band` | `amp_band:<name>;` | Read-only. The band the amplifier is set to, with names as in `band` (§5.2). A client may warn when it differs from the radio's. |
 | `amp_input` | `amp_input:<n>;` | Read-only. Which of the amplifier's inputs (radios) is selected, numbered as on the amplifier. |
 | `amp_antenna` | `amp_antenna:<n>,<atu>;` | Read-only. The amplifier's transmit antenna, numbered as on the amplifier, and its tuner: `on`, `bypass` or `none`. |
+| `amp_antenna_next` | `amp_antenna_next;` | Action, where the manifest has `cap:amp_antenna_next,w,action`: the amplifier's next antenna, as its own antenna key steps (the SPE steps through the antennas set up for the band). The push of `amp_antenna` is the answer. Refused with `tx_active` while the amplifier transmits, and with `device` as `amp_operate`. |
+| `amp_tune` | `amp_tune;` | Action, where the manifest has `cap:amp_tune,w,action`: starts the amplifier's own tuner (its tune key). It doesn't transmit by itself: the amplifier tunes on the RF it's given, which a client can send with `tune` (B19) at the power the amplifier asks for. Refused with `device` as `amp_operate`. |
 | `amp_warning` | `amp_warning:<text>;` | Read-only. The amplifier's current warning in its own words (percent-encoded), or empty when there's none. A warning doesn't stop the amplifier (SPE: `ATU BYPASSED`, `OVERHEATING`). |
 | `amp_alarm` | `amp_alarm:<text>;` | Read-only. The amplifier's current alarm, or empty when there's none. An alarm means the amplifier has protected itself (SPE: `SWR EXCEEDING LIMITS`, `INPUT OVERDRIVING`). |
 
@@ -274,6 +277,8 @@ cap:amp_power_level,r,enum,low,mid,high;
 cap:amp_band,r,enum,160m,80m,60m,40m,30m,20m,17m,15m,12m,10m,6m,4m;
 cap:amp_input,r,enum,1,2;
 cap:amp_antenna,r,enum,1,2,3,4;
+cap:amp_antenna_next,w,action;
+cap:amp_tune,w,action;
 cap:amp_warning,r,info;
 cap:amp_alarm,r,info;
 cap:meter.amp_po,r,meter,w,0,1300;
@@ -326,7 +331,7 @@ The document version and the wire version are separate. Drafts 0.x of this docum
 - **Collisions with future base commands.** If a later TCI adds a command with one of our names but different arguments, the base meaning wins, and TCI-X renames its own in a major version.
 - **Spectrum scope data** (for radios that output it: the Flex, IC-7300, IC-705) is left out of 1.0. Draft, not in 1.0: a per-connection binary stream for panadapter clients, plus spots kept by the server. See [drafts/spectrum.md](drafts/spectrum.md).
 - **RX and TX equalisers** (draft, not in 1.0): one `eq` command for graphic EQs and tone controls, with write-only EQs (the K3's TX EQ) marked as such. See [drafts/eq.md](drafts/eq.md).
-- **Amplifier control and interlocks.** §5.13 only reads the amplifier. Operate/Standby and tune from a TCI-X client, and a server refusing a key-up while the amplifier is in alarm (a new `error` code), are left for later.
+- **Amplifier interlocks.** A server refusing a key-up while the amplifier is in alarm (a new `error` code), and one action that starts the amplifier's tuner and sends the carrier until it's done, are left for later.
 - **Authentication** for servers reachable beyond localhost. TCI has none. Options include a token in the WebSocket URL or relying on a VPN.
 
 ## Appendix A. IC-7100 mapping (informative)
