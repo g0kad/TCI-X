@@ -132,6 +132,7 @@ All are bidirectional unless marked. The server echoes and pushes them just like
 | `attenuator` | `attenuator:<trx>,<db>;` | Enum of dB steps, e.g. `0,12`. |
 | `rf_gain` | `rf_gain:<trx>,<pct>;` | 0–100. |
 | `af_gain` | `af_gain:<trx>,<pct>;` | 0–100. The radio's own speaker and headphone level (the K3's AF GAIN), not the audio stream. |
+| `rx_audio_level` | `rx_audio_level:<trx>,<pct>;` | 0–100. The level of the RX audio stream itself (§6) as the server sends it, for every client: what WSJT-X's own input attenuator does, done once at the source. A server offers it where the radio sets that level apart from its speaker (the FLEX-6000's DAX RX gain). |
 | `squelch` | `squelch:<trx>,<pct>;` | Squelch knob position, 0–100. The base `sql_level` is a threshold in dB, which knob-style radios can't honour. |
 | `agc_mode` | *(base)* | Base command. Its values come from the manifest enum (the base spec lists `normal,fast,off`; radios have more). |
 | `agc_time` | `agc_time:<trx>,<value>;` | The decay time of the AGC speed in use (`agc_mode`), from the manifest's enum: `off`, or seconds (`0.1`, `0.2`, …). The list can follow the mode (Icom: 0.1–6.0 s in SSB, CW and RTTY, 0.3–8.0 s in AM), and the server re-sends the cap line when it changes. Each AGC speed keeps its own time, so the server pushes `agc_time` again after `agc_mode` changes. |

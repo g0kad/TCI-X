@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- `rx_audio_level` (§5.3): the level of the RX audio stream as the server sends it, apart from `af_gain` (the radio's speaker). Added for the FLEX-6000, whose DAX RX audio arrives near full scale with AGC off (its DAX RX gain).
 - B19: base TCI's `tune` and `tune_drive` pinned down. `tune` keys the radio's tune carrier under `trx`'s checks and ownership; `tune_drive` is its power, a percentage of rated as `drive`, kept apart from it. Added for the FLEX-6000 (`transmit tune`, `tunepower`).
 - §5.13: `amp_tune` (start the amplifier's tuner) and `amp_antenna_next` (its next antenna), both actions. Added for an SPE Expert 1.3K-FA (its TUNE and ANTENNA keys).
 - New §5.14, antenna rotator: `cap:rot`, `rot_state`, `rot_heading`, `rot_target` and `rot_turn`. Added for an Idiom Press Rotor-EZ, read and turned through its own control server.
