@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- New `error` code `access` (§5.1): refused by the server's rules for who may do what, such as a radio set to listen only (its clients may tune and listen, never transmit); the text says why. Such a radio's `receive_only` is `true`, so clients hide their transmit controls. Added for kadrad-hub's per-radio access rules.
 - New `error` code `interlock` (§5.1): a key-up or tune refused because a device in the radio's transmit path that it shares with another radio on the same server (an amplifier, an antenna), or a rule that the two don't transmit together, is in use by that radio. The text names both. Added for kadrad-hub serving several radios that share an amplifier or antennas.
 - `rx_audio_level` (§5.3): the level of the RX audio stream as the server sends it, apart from `af_gain` (the radio's speaker). Added for the FLEX-6000, whose DAX RX audio arrives near full scale with AGC off (its DAX RX gain).
 - B19: base TCI's `tune` and `tune_drive` pinned down. `tune` keys the radio's tune carrier under `trx`'s checks and ownership; `tune_drive` is its power, a percentage of rated as `drive`, kept apart from it. Added for the FLEX-6000 (`transmit tune`, `tunepower`).
