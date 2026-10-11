@@ -137,7 +137,8 @@ All are bidirectional unless marked. The server echoes and pushes them just like
 | `agc_mode` | *(base)* | Base command. Its values come from the manifest enum (the base spec lists `normal,fast,off`; radios have more). |
 | `agc_time` | `agc_time:<trx>,<value>;` | The decay time of the AGC speed in use (`agc_mode`), from the manifest's enum: `off`, or seconds (`0.1`, `0.2`, …). The list can follow the mode (Icom: 0.1–6.0 s in SSB, CW and RTTY, 0.3–8.0 s in AM), and the server re-sends the cap line when it changes. Each AGC speed keeps its own time, so the server pushes `agc_time` again after `agc_mode` changes. |
 | `rx_nb_level`, `rx_nr_level` | `rx_nr_level:<trx>,<pct>;` | Levels alongside the base `rx_nb_enable` / `rx_nr_enable`. |
-| `antenna` | `antenna:<trx>,<name>;` | Enum from the manifest. |
+| `antenna` | `antenna:<trx>,<name>;` | Enum from the manifest. The antenna the radio transmits on, and receives on unless `rx_antenna` or `rx_antenna_port` chooses another. Choices the radio hasn't got are left out of the cap line. |
+| `rx_antenna_port` | `rx_antenna_port:<trx>,<name>;` | Enum from the manifest: the input the radio receives on, chosen apart from `antenna`, on a radio that sets the two separately (a FlexRadio slice's `rxant`: `ant1`, `ant2`, `rx_a`, `xvta` …). Choices the radio hasn't got are left out of the cap line. |
 | `rx_antenna` | `rx_antenna:<trx>,<bool>;` | Receive on a separate receive-only input (the K3's RX ANT, with the KXV3) instead of `antenna`. Transmit stays on `antenna`. Withdrawn (`cap:rx_antenna,none`) if the radio reports it hasn't got one. |
 
 ### 5.4 Filters
