@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- New §4.3, login: a server may require one on a radio (`login_required:<nonce>`, `login:<user>,<proof>`, `login:ok,<role>`), with an HMAC-SHA256 proof over a scrypt key so the password never crosses the link, and the roles `listen`, `operate`, `station` and `admin`. `error:login,access,…` for a failed login. The open point on authentication becomes one on encryption. Added for kadrad-hub's per-radio logins.
 - `rx_antenna_port` (§5.3): the receive input chosen apart from `antenna`, which is then the transmit antenna. Added for FlexRadio's `rxant` and `txant`.
 - New `error` code `access` (§5.1): refused by the server's rules for who may do what, such as a radio set to listen only (its clients may tune and listen, never transmit); the text says why. Such a radio's `receive_only` is `true`, so clients hide their transmit controls. Added for kadrad-hub's per-radio access rules.
 - New `error` code `interlock` (§5.1): a key-up or tune refused because a device in the radio's transmit path that it shares with another radio on the same server (an amplifier, an antenna), or a rule that the two don't transmit together, is in use by that radio. The text names both. Added for kadrad-hub serving several radios that share an amplifier or antennas.

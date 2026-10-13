@@ -99,6 +99,43 @@ cap:<command>,<access>,<type>[,<params>…];
 - Base commands the server supports are listed too, so the manifest is the complete list. A command that isn't in the manifest isn't supported.
 - A `cap` line can arrive again later (e.g. `rf_gain` becomes unavailable in a mode). The newest line wins, and `cap:<command>,none;` removes one. When a command comes back (the K3's APF on a change to CW), the server sends its `cap` line and then its current value.
 
+### 4.3 Login
+
+A server may require a login on a radio it serves: base TCI has no authentication, and a radio reachable over a VPN, a shared network or the internet otherwise answers anyone who can reach its port. A login is optional; a server that requires one may still let some connections in without it (its own machine, say), and those carry on as in §4.1.
+
+On a connection that must log in, the server sends its `protocol:` line and then:
+
+```
+login_required:<nonce>;
+```
+
+and nothing else (no init burst, no state, no audio) until the login succeeds. `nonce` is 16 random bytes as 32 lower-case hex digits, new for every connection. Until then it ignores every command but `login`, and it closes a connection that hasn't logged in within 10 s. A base client, which can't log in, is therefore closed.
+
+The client replies:
+
+```
+login:<user>,<proof>;
+```
+
+- `user` is the account name, percent-encoded as other TCI-X text.
+- `key` = scrypt(password as UTF-8, salt = `tcix-login:` followed by the user name as UTF-8, N = 2^14, r = 8, p = 1, 32 bytes).
+- `proof` = HMAC-SHA256(key, the nonce's 32 hex digits as ASCII), as 64 lower-case hex digits.
+
+The password never crosses the link, and a proof is good for one connection only. The server stores `key`, not the password. Example: user `g0kad`, password `correct horse`, nonce `00112233445566778899aabbccddeeff` give key `7b9d9b088f60009828eceb149a2fc01b8c3e925ba0a82f1e51be70ed21b3d157` and proof `6a83548bc3fdc8eb8f11f1d33bee6884231769102e96a05c0d188d3b2ec66974`.
+
+On success the server replies `login:ok,<role>;` and continues as on any connection: the init burst, `ready;`, the state push, and the opt-in of §4.1 when the client sends `tcix:`. `role` says what the account may do on this radio:
+
+| Role | May |
+|---|---|
+| `listen` | tune, listen and read the meters; never transmit (the server sends `receive_only:true`) |
+| `operate` | also transmit |
+| `station` | also switch and tune the station's devices (amplifier, rotator, §5.13–5.14) |
+| `admin` | everything, including the server's own setup |
+
+A command the role doesn't allow is refused with `error:<command>,access,<text>` (§5.1). On failure (an unknown user and a wrong password look the same) the server sends `error:login,access,<text>` and closes the connection a second later. A server should limit failed logins from one address (the reference server blocks an address for a minute after five failures in a minute) and log them.
+
+The login proves who the client is; it doesn't encrypt the session. Over an untrusted network, carry TCI-X inside a VPN or other encrypted link.
+
 ## 5. Extension commands
 
 All are bidirectional unless marked. The server echoes and pushes them just like base commands (B2), but only to TCI-X clients.
@@ -108,7 +145,7 @@ All are bidirectional unless marked. The server echoes and pushes them just like
 | Command | Form | Notes |
 |---|---|---|
 | `tcix` | `tcix:<version>;` | Opt-in (§4.1). |
-| `error` | `error:<command>,<code>[,<text>];` | Server → client. Codes: `unsupported`, `range`, `busy` (another client owns TX), `tx_active` (not allowed while transmitting), `duplex` (key refused: a duplex offset is set outside FM, so the radio would transmit off the dial frequency), `tx_lock` (key or change refused: the TX frequency or power would fall outside the server's configured TX lock, a site limit such as one dummy load's frequency and power), `tx_audio` (key with `tci` audio refused: the radio's audio input wouldn't take the client's audio over this link), `tx_timer` (key refused: over a network link that can drop while keyed, the radio's own TX timer is off), `tx_where` (key refused: the radio reports a TX frequency other than the server's), `radio` (the radio rejected or didn't answer), `device` (an amplifier or rotator, or the program that owns it, refused or can't be reached; the text says why, e.g. someone else is in control of it, §5.13–5.14), `interlock` (key or tune refused: something in this radio's transmit path that it shares with another radio on the same server, such as an amplifier or antenna, or the station's rule that the two don't transmit together, is in use by that radio; the text names the device and the radio), `access` (refused by the server's rules for who may do what: a radio set to listen only, so its clients may tune and listen but never transmit; the text says why), `timeout`. |
+| `error` | `error:<command>,<code>[,<text>];` | Server → client. Codes: `unsupported`, `range`, `busy` (another client owns TX), `tx_active` (not allowed while transmitting), `duplex` (key refused: a duplex offset is set outside FM, so the radio would transmit off the dial frequency), `tx_lock` (key or change refused: the TX frequency or power would fall outside the server's configured TX lock, a site limit such as one dummy load's frequency and power), `tx_audio` (key with `tci` audio refused: the radio's audio input wouldn't take the client's audio over this link), `tx_timer` (key refused: over a network link that can drop while keyed, the radio's own TX timer is off), `tx_where` (key refused: the radio reports a TX frequency other than the server's), `radio` (the radio rejected or didn't answer), `device` (an amplifier or rotator, or the program that owns it, refused or can't be reached; the text says why, e.g. someone else is in control of it, §5.13–5.14), `interlock` (key or tune refused: something in this radio's transmit path that it shares with another radio on the same server, such as an amplifier or antenna, or the station's rule that the two don't transmit together, is in use by that radio; the text names the device and the radio), `access` (refused by the server's rules for who may do what: a radio set to listen only, so its clients may tune and listen but never transmit, or a login whose role doesn't allow it, §4.3; the text says why; as `error:login,access,…`, a failed login), `timeout`. |
 | `radio_state` | `radio_state:<state>;` | Server → client: `connected`, `no_response`, `powered_off`, `port_lost`. |
 | `power` | `power:<bool>;` | Radio power on/off, where the radio supports it. |
 | `dial_lock` | `dial_lock:<bool>;` | The radio's own dial lock: its front-panel tuning is locked. Tuning over TCI still works, but a client with a dial of its own should stop it too while the lock is on, so the lock means the same everywhere. One for the radio, so no trx index. |
@@ -334,7 +371,7 @@ The document version and the wire version are separate. Drafts 0.x of this docum
 - **Spectrum scope data** (for radios that output it: the Flex, IC-7300, IC-705) is left out of 1.0. Draft, not in 1.0: a per-connection binary stream for panadapter clients, plus spots kept by the server. See [drafts/spectrum.md](drafts/spectrum.md).
 - **RX and TX equalisers** (draft, not in 1.0): one `eq` command for graphic EQs and tone controls, with write-only EQs (the K3's TX EQ) marked as such. See [drafts/eq.md](drafts/eq.md).
 - **Amplifier interlocks.** A server refusing a key-up while the amplifier is in alarm (a new `error` code), and one action that starts the amplifier's tuner and sends the carrier until it's done, are left for later.
-- **Authentication** for servers reachable beyond localhost. TCI has none. Options include a token in the WebSocket URL or relying on a VPN.
+- **Encryption.** The login (§4.3) proves who a client is, but the session itself is clear text. TLS (`wss://`) is left for later; until then, use a VPN.
 
 ## Appendix A. IC-7100 mapping (informative)
 
