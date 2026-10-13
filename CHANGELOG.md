@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- §5.13: `amp_power`, the amplifier switched on or off where the server can (a relay on its remote on line), announced as `cap:amp_power,rw,bool`, with or without `cap:amp`. §5.1: `power` may be switched by the server itself (a relay on the radio's remote power line), refused with `access` or `device`. Added for kadrad-hub with kadrad-power at the club (a FlexRadio and an SPE on a relay board).
 - New §4.3, login: a server may require one on a radio (`login_required:<nonce>`, `login:<user>,<proof>`, `login:ok,<role>`), with an HMAC-SHA256 proof over a scrypt key so the password never crosses the link, and the roles `listen`, `operate`, `station` and `admin`. `error:login,access,…` for a failed login. The open point on authentication becomes one on encryption. Added for kadrad-hub's per-radio logins.
 - `rx_antenna_port` (§5.3): the receive input chosen apart from `antenna`, which is then the transmit antenna. Added for FlexRadio's `rxant` and `txant`.
 - New `error` code `access` (§5.1): refused by the server's rules for who may do what, such as a radio set to listen only (its clients may tune and listen, never transmit); the text says why. Such a radio's `receive_only` is `true`, so clients hide their transmit controls. Added for kadrad-hub's per-radio access rules.
