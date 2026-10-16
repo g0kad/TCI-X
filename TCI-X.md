@@ -96,7 +96,7 @@ cap:<command>,<access>,<type>[,<params>…];
   - `meter,<unit>,<min>,<max>[,<red_from>]`: for `meter` names (§5.6), e.g. `cap:meter.alc,r,meter,pct,0,100,100;`
   - `info,<value>…`: fixed facts, e.g. `cap:rated_power,r,info,hf,100,6m,100,2m,50,70cm,35;`
 - `cap:support,r,info,<level>;` says how far the server's support for this radio has been checked, so a client can say so: `rigctld` (basic control through Hamlib's `rigctld`, as good as Hamlib's description of the radio), `documentation` (written from the manufacturer's reference, not yet tried on a radio; a server should keep these receive-only), `probed` (checked against a real radio by the probe kit) or `bench-verified` (tested on a radio, transmit included).
-- Base commands the server supports are listed too, so the manifest is the complete list. A command that isn't in the manifest isn't supported.
+- Base commands the server supports are listed too, so the manifest is the complete list. A command that isn't in the manifest isn't supported. A server with no receive audio for the radio (set up for control only) leaves out `audio_start`, `audio_stop` and `audio_codec`, so a client can say so rather than offer audio it can't start; the stream format commands stay if it takes TX audio.
 - A `cap` line can arrive again later (e.g. `rf_gain` becomes unavailable in a mode). The newest line wins, and `cap:<command>,none;` removes one. When a command comes back (the K3's APF on a change to CW), the server sends its `cap` line and then its current value.
 
 ### 4.3 Login

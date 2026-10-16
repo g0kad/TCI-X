@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- §4: a server with no receive audio for a radio leaves `audio_start`, `audio_stop` and `audio_codec` out of the manifest. Added for kadrad-hub radios set up for control only.
 - §5.3: `rx_nr_lms_enable`/`rx_nr_lms_level`, `rx_anf_lms_enable`/`rx_anf_lms_level` and `rx_wnb_enable`/`rx_wnb_level`: an adaptive (LMS) noise reduction and notch alongside the base ones, and a wideband noise blanker, each with a level. Where the radio doesn't report one it's announced `w` and echoed as set. Added for the FLEX-6000 on firmware 4 (`lms_nr`, `lms_anf`, `wnb`; a FLEX-6400 on a basic licence takes these, and refuses the subscription filters `nrf` and `anft`).
 - §5.13: `amp_power`, the amplifier switched on or off where the server can (a relay on its remote on line), announced as `cap:amp_power,rw,bool`, with or without `cap:amp`. §5.1: `power` may be switched by the server itself (a relay on the radio's remote power line), refused with `access` or `device`. Added for kadrad-hub with kadrad-power at the club (a FlexRadio and an SPE on a relay board).
 - New §4.3, login: a server may require one on a radio (`login_required:<nonce>`, `login:<user>,<proof>`, `login:ok,<role>`), with an HMAC-SHA256 proof over a scrypt key so the password never crosses the link, and the roles `listen`, `operate`, `station` and `admin`. `error:login,access,…` for a failed login. The open point on authentication becomes one on encryption. Added for kadrad-hub's per-radio logins.
