@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- New §4.4, control: on a radio with logins, one operator at a time may change the radio while everyone else watches (`cap:control`, `control:<user>,<since>`, `control_take`, `control_release`, `control_request` and `control_answer`, `control_asked`, `control_refused`), with the new `error` code `control`. Control is taken by the first change, never changes hands while transmitting, and is taken back after an idle time, closing the operator's connections; unkeying is never refused. Added for kadrad-hub at a club station shared by its members.
 - §5.13: `amp_power_level_next` (the amplifier's next power setting, as its power key) and `amp_drive_down` / `amp_drive_up` (a step of the radio's drive, for an amplifier that sets it in Operate), all actions. Added for an SPE Expert 1.3K-FA driving a FLEX-6400 (its POWER and − / + keys).
 - §4: a server with no receive audio for a radio leaves `audio_start`, `audio_stop` and `audio_codec` out of the manifest. Added for kadrad-hub radios set up for control only.
 - §5.3: `rx_nr_lms_enable`/`rx_nr_lms_level`, `rx_anf_lms_enable`/`rx_anf_lms_level` and `rx_wnb_enable`/`rx_wnb_level`: an adaptive (LMS) noise reduction and notch alongside the base ones, and a wideband noise blanker, each with a level. Where the radio doesn't report one it's announced `w` and echoed as set. Added for the FLEX-6000 on firmware 4 (`lms_nr`, `lms_anf`, `wnb`; a FLEX-6400 on a basic licence takes these, and refuses the subscription filters `nrf` and `anft`).

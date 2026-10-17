@@ -136,6 +136,43 @@ A command the role doesn't allow is refused with `error:<command>,access,<text>`
 
 The login proves who the client is; it doesn't encrypt the session. Over an untrusted network, carry TCI-X inside a VPN or other encrypted link.
 
+### 4.4 Control: one operator at a time
+
+On a radio that requires a login (§4.3), a server may let **one operator** at a time change the radio, while everyone else logged in **watches**: they get the same state, meters, audio and spectrum, and their changes are refused. Control belongs to an account, not a connection, so all of one operator's connections (a panel, a panadapter, a CW window) may act. A radio without logins has no control: every client may act, as in base TCI.
+
+A server that applies control announces it in the manifest, with the idle time after which it takes control back, in minutes:
+
+```
+cap:control,r,info,15;
+cap:control_take,w,action;
+cap:control_release,w,action;
+cap:control_request,w,action;
+cap:control_answer,w,action;
+```
+
+and pushes who holds it, to every TCI-X client, after the manifest and whenever it changes:
+
+```
+control:<user>,<since>;       e.g. control:g4abc,1760729000;
+control:;                     nobody has control
+```
+
+`user` is the account name (percent-encoded), `since` when it took control, in Unix seconds. A client compares `user` with its own login to know whether it's the operator.
+
+| Command | Form | Notes |
+|---|---|---|
+| `control_take` | `control_take;` | Take control. Granted when nobody has it. An `admin` login takes it from another operator at once (the server logs it); anyone else is refused with `control`. |
+| `control_release` | `control_release;` | Give control up. Ignored from anyone but the operator. |
+| `control_request` | `control_request;` | Ask the operator for control. When nobody has it, it's granted as `control_take`. Otherwise the server sends `control_asked:<user>;` to the operator's connections, naming who asks. |
+| `control_answer` | `control_answer:<user>,<bool>;` | The operator's answer to `control_asked`. `true` hands control to `user`; `false` sends `control_refused:<operator>;` to `user`'s connections. Ignored from anyone but the operator. |
+
+- **Taking control by acting.** When nobody has control, the first change a client makes (tuning, a setting, a key-up) takes control for its account, as `control_take` would, and the change is carried out.
+- **Refusals.** A change from a watcher is refused with `error:<command>,control,<user>`, naming the operator (§5.1), and nothing is changed. What only concerns the client's own connection is never refused: reads, the audio, sensor, meter and spectrum streams, and the opt-in. **Unkeying is never refused:** any client may send `trx:<trx>,false` and `tune:<trx>,false`, as before.
+- **Never while transmitting.** Control doesn't change hands while the radio transmits. A hand-over, an admin's take or a release made while it's keyed waits for the unkey, then applies.
+- **Idle.** When the operator has made no change and not transmitted for the idle time in `cap:control`, the server takes control back (`control:;`), sends `error:control,idle,<text>` to the operator's connections and closes them, so a client should then wait for its user before connecting again rather than reconnecting by itself.
+- **Disconnecting.** When the operator's last connection closes, control is released (and the radio unkeyed, as B14 already requires).
+- **Devices.** The amplifier and rotator (§5.13–5.14) follow the same rule: only the operator may change them, as far as its role allows.
+
 ## 5. Extension commands
 
 All are bidirectional unless marked. The server echoes and pushes them just like base commands (B2), but only to TCI-X clients.
@@ -145,7 +182,7 @@ All are bidirectional unless marked. The server echoes and pushes them just like
 | Command | Form | Notes |
 |---|---|---|
 | `tcix` | `tcix:<version>;` | Opt-in (§4.1). |
-| `error` | `error:<command>,<code>[,<text>];` | Server → client. Codes: `unsupported`, `range`, `busy` (another client owns TX), `tx_active` (not allowed while transmitting), `duplex` (key refused: a duplex offset is set outside FM, so the radio would transmit off the dial frequency), `tx_lock` (key or change refused: the TX frequency or power would fall outside the server's configured TX lock, a site limit such as one dummy load's frequency and power), `tx_audio` (key with `tci` audio refused: the radio's audio input wouldn't take the client's audio over this link), `tx_timer` (key refused: over a network link that can drop while keyed, the radio's own TX timer is off), `tx_where` (key refused: the radio reports a TX frequency other than the server's), `radio` (the radio rejected or didn't answer), `device` (an amplifier or rotator, or the program that owns it, refused or can't be reached; the text says why, e.g. someone else is in control of it, §5.13–5.14), `interlock` (key or tune refused: something in this radio's transmit path that it shares with another radio on the same server, such as an amplifier or antenna, or the station's rule that the two don't transmit together, is in use by that radio; the text names the device and the radio), `access` (refused by the server's rules for who may do what: a radio set to listen only, so its clients may tune and listen but never transmit, or a login whose role doesn't allow it, §4.3; the text says why; as `error:login,access,…`, a failed login), `timeout`. |
+| `error` | `error:<command>,<code>[,<text>];` | Server → client. Codes: `unsupported`, `range`, `busy` (another client owns TX), `tx_active` (not allowed while transmitting), `duplex` (key refused: a duplex offset is set outside FM, so the radio would transmit off the dial frequency), `tx_lock` (key or change refused: the TX frequency or power would fall outside the server's configured TX lock, a site limit such as one dummy load's frequency and power), `tx_audio` (key with `tci` audio refused: the radio's audio input wouldn't take the client's audio over this link), `tx_timer` (key refused: over a network link that can drop while keyed, the radio's own TX timer is off), `tx_where` (key refused: the radio reports a TX frequency other than the server's), `radio` (the radio rejected or didn't answer), `device` (an amplifier or rotator, or the program that owns it, refused or can't be reached; the text says why, e.g. someone else is in control of it, §5.13–5.14), `interlock` (key or tune refused: something in this radio's transmit path that it shares with another radio on the same server, such as an amplifier or antenna, or the station's rule that the two don't transmit together, is in use by that radio; the text names the device and the radio), `access` (refused by the server's rules for who may do what: a radio set to listen only, so its clients may tune and listen but never transmit, or a login whose role doesn't allow it, §4.3; the text says why; as `error:login,access,…`, a failed login), `control` (refused because another account is the radio's operator, §4.4; the text is the operator's account name), `timeout`. |
 | `radio_state` | `radio_state:<state>;` | Server → client: `connected`, `no_response`, `powered_off`, `port_lost`. |
 | `power` | `power:<bool>;` | Radio power on/off, where the radio supports it, or where the server switches it itself (a relay on the radio's remote power line, say: the reference server does this for a FlexRadio). The push of the new state is the answer. A server may refuse it with `access` to a login whose role isn't `station` or above (§4.3), and with `device` when what switches it can't be reached. |
 | `dial_lock` | `dial_lock:<bool>;` | The radio's own dial lock: its front-panel tuning is locked. Tuning over TCI still works, but a client with a dial of its own should stop it too while the lock is on, so the lock means the same everywhere. One for the radio, so no trx index. |
