@@ -273,7 +273,7 @@ The radio's own scans. Radios can't report whether one is running, so these are 
 
 ### 5.13 External amplifier
 
-A linear amplifier in the station's transmit path, which the server reads from the amplifier's own controller (a serial port, or a program that owns that port). The radio's `po` and `swr` meters show what goes into the amplifier. These show what goes to the antenna. Read-only except Operate/Standby (`amp_operate`), its tuner (`amp_tune`) and its antenna (`amp_antenna_next`): everything else is done from the amplifier's own controls or its own program.
+A linear amplifier in the station's transmit path, which the server reads from the amplifier's own controller (a serial port, or a program that owns that port). The radio's `po` and `swr` meters show what goes into the amplifier. These show what goes to the antenna. Read-only except Operate/Standby (`amp_operate`), its tuner (`amp_tune`), its antenna (`amp_antenna_next`), its power setting (`amp_power_level_next`) and the drive it sets in Operate (`amp_drive_down`, `amp_drive_up`): everything else is done from the amplifier's own controls or its own program.
 
 A server that's set up with an amplifier announces it in the manifest, and keeps the announcement while the amplifier isn't answering. `amp_state` says whether the readings are live.
 
@@ -288,6 +288,8 @@ cap:amp,r,info,<maker>,<model>,<rated_w>;        e.g. cap:amp,r,info,SPE,Expert 
 | `amp_power` | `amp_power:<bool>;` | The amplifier switched on or off, where the server can (a relay on its remote on line or its supply), announced as `cap:amp_power,rw,bool`, which may be present without `cap:amp` (an amplifier the server switches but doesn't read). The push of the new state is the answer. Refused as `power`. While it's off, `amp_state` is `no_response`. |
 | `amp_tx` | `amp_tx:<bool>;` | Read-only. The amplifier reports it is transmitting. |
 | `amp_power_level` | `amp_power_level:<level>;` | Read-only. The amplifier's power setting, from `cap:amp_power_level,r,enum,…` (SPE: `low`, `mid`, `high`). |
+| `amp_power_level_next` | `amp_power_level_next;` | Action, where the manifest has `cap:amp_power_level_next,w,action`: the amplifier's next power setting, as its own power key steps (SPE: low, mid, high, then low again). The push of `amp_power_level` is the answer. Refused with `tx_active` while the amplifier transmits, and with `device` as `amp_operate`. |
+| `amp_drive_down`, `amp_drive_up` | `amp_drive_down;` `amp_drive_up;` | Actions, where the manifest has `cap:amp_drive_down,w,action` and `cap:amp_drive_up,w,action`: one step down or up of the radio's drive, for an amplifier that sets the drive itself while in Operate (the SPE with a radio on its CAT link, with its − / + keys). The radio's `drive` push follows as the radio changes it. Allowed while transmitting. Refused with `device` while the amplifier is in Standby (the radio then sets its own drive) and as `amp_operate`. |
 | `amp_band` | `amp_band:<name>;` | Read-only. The band the amplifier is set to, with names as in `band` (§5.2). A client may warn when it differs from the radio's. |
 | `amp_input` | `amp_input:<n>;` | Read-only. Which of the amplifier's inputs (radios) is selected, numbered as on the amplifier. |
 | `amp_antenna` | `amp_antenna:<n>,<atu>;` | Read-only. The amplifier's transmit antenna, numbered as on the amplifier, and its tuner: `on`, `bypass` or `none`. |
@@ -317,6 +319,9 @@ cap:amp_state,r,enum,connected,no_response,unreachable;
 cap:amp_operate,rw,bool;
 cap:amp_tx,r,bool;
 cap:amp_power_level,r,enum,low,mid,high;
+cap:amp_power_level_next,w,action;
+cap:amp_drive_down,w,action;
+cap:amp_drive_up,w,action;
 cap:amp_band,r,enum,160m,80m,60m,40m,30m,20m,17m,15m,12m,10m,6m,4m;
 cap:amp_input,r,enum,1,2;
 cap:amp_antenna,r,enum,1,2,3,4;
