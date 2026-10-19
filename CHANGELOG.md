@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- §5.10: with `memory_list.read` at `on_request`, `memory_list_end` may carry when the server last read the radio (Unix seconds), as a server may keep what it read between runs.
 - §5.2: `vfo_link:<trx>,<bool>`, VFO B following VFO A. Added for the Elecraft K3 (`LN`).
 - §5.10: `cap:memory_list.read,r,info,on_request` for a radio that can only recall a memory to read it: the server reads the channels only on `memory_list:<trx>,refresh` and puts the radio back after; a plain `memory_list` returns what it has. `memory_recall` then uses the radio's own recall, before the channel is listed if need be, and there's no `memory_mode`. Added for the Elecraft K3 (`MC`).
 - New §4.4, control: on a radio with logins, one operator at a time may change the radio while everyone else watches (`cap:control`, `control:<user>,<since>`, `control_take`, `control_release`, `control_request` and `control_answer`, `control_asked`, `control_refused`), with the new `error` code `control`. Control is taken by the first change, never changes hands while transmitting, and is taken back after an idle time, closing the operator's connections; unkeying is never refused. Added for kadrad-hub at a club station shared by its members.
