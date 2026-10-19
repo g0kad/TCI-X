@@ -195,6 +195,7 @@ All are bidirectional unless marked. The server echoes and pushes them just like
 | `vfo_select` | `vfo_select:<trx>,<ch>;` | Which VFO is active (A = 0, B = 1). |
 | `vfo_equal` | `vfo_equal:<trx>;` | Action: A=B. |
 | `vfo_swap` | `vfo_swap:<trx>;` | Action: A↔B. |
+| `vfo_link` | `vfo_link:<trx>,<bool>;` | VFO B follows VFO A: tuning A moves both (Elecraft `LN`, CONFIG:VFO LNK). Out of split the server pushes the new `vfo:<trx>,1` with A's; in split B stays the transmit frequency, as the radio keeps it. |
 | `tx_watch` | `tx_watch:<trx>,<bool>;` | Listen on the transmit frequency while it differs from the receive one (split): Icom XFC, Yaesu TXW. |
 | `band` | `band:<trx>,<name>;` | The radio's band key, using the radio's own band stack: the server saves where the radio is into the current band's latest stack entry, then applies the named band's latest entry (frequency, mode, filter, DATA; duplex and tone in FM only). The radio's stack stays the one record, so its own band key agrees. Write-only; the server echoes `band:<trx>,<name>` and pushes the new `vfo`/`modulation`. Names come from `cap:band,w,enum,160m,…`; a band the list lacks (the IC-7100 has no 60 m stack) is the client's to handle. |
 
