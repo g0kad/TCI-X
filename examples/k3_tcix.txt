@@ -62,11 +62,15 @@ cap:af_gain,rw,range,0,100,1,pct
 cap:squelch,rw,range,0,100,1,pct
 cap:rx_nb_level,rw,range,0,100,1,pct
 cap:mic_gain,rw,range,0,100,1,pct
+cap:dial_lock,rw,bool
 cap:rx_xfil,r,enum,1,2,3,4,5
 cap:comp,rw,range,0,100,1,pct
 cap:monitor,rw,range,0,100,1,pct
 cap:rx_filter_band,rw,range,50,4000,50,hz
 cap:rx_filter_center,w,action
+cap:memory_list,w,action
+cap:memory_recall,w,action
+cap:memory_list.read,r,info,on_request
 cap:band,w,enum,160m,80m,60m,40m,30m,20m,17m,15m,12m,10m,6m
 cap:vfo_equal,w,action
 cap:vfo_swap,w,action
