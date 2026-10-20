@@ -59,10 +59,13 @@ cap:antenna,rw,enum,ant1,ant2
 cap:rx_antenna,rw,bool
 cap:rf_gain,rw,range,0,100,1,pct
 cap:af_gain,rw,range,0,100,1,pct
+cap:rx_audio_level,rw,range,0,100,1,pct
 cap:squelch,rw,range,0,100,1,pct
 cap:rx_nb_level,rw,range,0,100,1,pct
 cap:mic_gain,rw,range,0,100,1,pct
 cap:dial_lock,rw,bool
+cap:display_brightness,rw,range,2,8,1,step
+cap:led_brightness,rw,range,2,8,1,step
 cap:vfo_link,rw,bool
 cap:atu,rw,bool
 cap:rx_xfil,r,enum,1,2,3,4,5
