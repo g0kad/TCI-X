@@ -79,6 +79,8 @@ cap:memory_list.read,r,info,on_request
 cap:band,w,enum,160m,80m,60m,40m,30m,20m,17m,15m,12m,10m,6m
 cap:vfo_equal,w,action
 cap:vfo_swap,w,action
+cap:cw_macros,w,action
+cap:cw_macros_stop,w,action
 cap_end
 radio_state:connected
 data_mode:0,false
