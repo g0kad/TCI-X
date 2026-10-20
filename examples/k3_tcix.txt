@@ -64,9 +64,11 @@ cap:rx_nb_level,rw,range,0,100,1,pct
 cap:mic_gain,rw,range,0,100,1,pct
 cap:dial_lock,rw,bool
 cap:vfo_link,rw,bool
+cap:atu,rw,bool
 cap:rx_xfil,r,enum,1,2,3,4,5
 cap:comp,rw,range,0,100,1,pct
 cap:monitor,rw,range,0,100,1,pct
+cap:atu_tune,w,action
 cap:rx_filter_band,rw,range,50,4000,50,hz
 cap:rx_filter_center,w,action
 cap:memory_list,w,action
