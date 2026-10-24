@@ -85,7 +85,15 @@ A TCI-X server with no panorama of its own keeps the spot list instead: by calls
 
 So a DX cluster client (or any TCI logger) adds spots, a panadapter client draws them, and a click on one tunes the radio and tells every client which spot it was. The clients never talk to each other directly.
 
-## 5. Open points
+## 5. SDRs whose view is their I/Q
+
+On an SDR such as the Hermes Lite 2, the spectrum is the receiver's own I/Q: its span is the I/Q sample rate, and its centre is where the NCO is tuned. The commands above serve it as follows. (Asked by an HL2 server's author, 24 Oct 2026.)
+
+- **Span is `spectrum_span`, an enum of the sample rates** (`cap:spectrum_span,rw,enum,48000,96000,192000,384000`), or a little less where the server crops the edges the decimation filter rolls off. Changing it changes the receiver's sample rate, for every client, as any span is radio state. The server pushes `spectrum_edges` after the change, and `iq_samplerate` too where it serves base TCI's I/Q stream. A client shouldn't treat a span change as free: the receiver may drop a few blocks while it changes.
+- **The centre moves the NCO, in base TCI's terms.** Base TCI already describes such a receiver: `dds` is the centre of the receiver's band (the NCO), and `if` is where the listening frequency sits within it, so `vfo` = `dds` + `if`. `spectrum_center` sets `dds`, and the server changes `if` to keep `vfo` where it was: the operator keeps listening on the same frequency while the view moves, which is what "without retuning" means above. So such a server offers `cap:spectrum_center` with the range its NCO allows, and pushes `dds`, `if` and `spectrum_edges` after each move.
+- **A centre that would leave the VFO outside the new view is refused** with `range`. A client dragging the view asks for a nearer centre, and tuning the VFO beyond the edge is the server's to handle by moving `dds` with it (pushing `dds`, `if` and `spectrum_edges`), as such servers already do for base TCI clients.
+
+## 6. Open points
 
 - **Passband fallback.** For radios with no scope data, a server could compute a narrow spectrum from RX audio (the passband only) and serve it the same way.
 - **Several pans.** The Flex can run more than one panadapter. This draft gives one per trx; a second would want a pan index.
