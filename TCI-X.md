@@ -1,6 +1,6 @@
 # TCI-X: TCI with extensions for full radio control
 
-*Draft 0.1. First written 27 Sep 2026, published 7 Oct 2026. Editor: Mike G0KAD, with the KADRAD project.*
+*Draft 0.2, 27 Oct 2026. First written 27 Sep 2026, published 7 Oct 2026. Editor: Mike G0KAD, with the KADRAD project.*
 
 *Base: Expert Electronics TCI v2.0 (12 Jan 2024), published at [github.com/ExpertSDR3/TCI](https://github.com/ExpertSDR3/TCI) under an MIT permission notice, which allows this derived specification. The notice is reproduced in Appendix B. TCI-X is an independent extension. It is not made or endorsed by Expert Electronics.*
 
@@ -406,9 +406,19 @@ cap:rot_turn,w,range,0,360,1,deg;
 
 A rotator is TCI-X only, and one per server: no trx index.
 
+### 5.15 Spectrum (draft)
+
+The panadapter stream is a draft, not yet in 1.0: [drafts/spectrum.md](drafts/spectrum.md). It's listed here so that a server for a radio with a scope, or an SDR with its I/Q, finds it. A client offers a panadapter only where the manifest has a writable `cap:spectrum` line. The draft's §3 starts with the minimum a server needs.
+
+| Command | Form | Notes |
+|---|---|---|
+| `spectrum_enable` | `spectrum_enable:<trx>,<bool>[,<points>,<rate>];` | Per connection: starts or stops this client's spectrum stream, one binary frame of type `0x100` per row ([drafts/spectrum.md](drafts/spectrum.md) §3.3). Announced by `cap:spectrum,rw,info,<unit>,<max_points>,<max_rate>;`. The span, centre, edges and the radio's scope settings are in the draft. |
+
 ## 6. Binary streams
 
 These are unchanged from the base spec, except for RX audio after `audio_codec:0,opus` (§5.1). Each RX_AUDIO block then carries one Opus packet (RFC 6716) as its payload, with `codec` = 1 (0 is PCM, as in base TCI), `channels` = 1, `sample_rate` the rate it decodes to, and `length` the samples it decodes to, as for PCM. The packet's size is the payload's: the message length less the 64-byte header. The reference server sends 40 ms packets at 24 kbit/s (voice, up to 8 kHz wide): about 40 kbit/s with the headers, against 0.2 Mbit/s for 12 kHz int16. Base clients never see Opus: they can't ask for it.
+
+The spectrum stream (type `0x100`, §5.15) is described in [drafts/spectrum.md](drafts/spectrum.md) §3.3.
 
 ## 7. Versioning
 

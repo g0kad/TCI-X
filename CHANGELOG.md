@@ -1,7 +1,10 @@
 # Changelog
 
-## Unreleased
+## Draft 0.2 (27 Oct 2026)
 
+Second public draft, still describing wire version `tcix:1.0`.
+
+- New §5.15, spectrum (draft): the `spectrum_enable` command and its `cap:spectrum` line listed in the main document, pointing to drafts/spectrum.md, and the `0x100` stream named in §6. drafts/spectrum.md §3 starts with the minimum a server needs for a client's panadapter: a writable `cap:spectrum`, `cap_end`, the `spectrum_enable` echo, the `0x100` frames and `spectrum_edges`. Nothing on the wire changes. (The author of an ANAN/Hermes server found no panadapter key in KADRAD: the draft was easy to miss.)
 - §4.4: a server may count the idle time only while another account is connected, so an operator alone on the radio keeps control. The reference server does (Mike G0KAD: a lone operator was being disconnected for nothing).
 - §5.3: `rx_gain` (front-end gain in dB, for an SDR's LNA or a fine step attenuator; a server offers it or `rf_gain`, not both) and `rx_overload` (read-only, the ADC clipping, pushed on change at most four times a second and held for half a second). §5.4: `band_filter` (the RF band filter on a filter board, or `auto`). §5.5: `pa_enable` (the radio's own PA on or off, refused while transmitting). Asked for by the author of a Hermes Lite 2 server; also ANAN radios under Thetis, SDRplay and Airspy receivers, the FLEX-6000 and Icom's OVF, and the K3's KPA3.
 - drafts/spectrum.md §5: an SDR whose view is its I/Q: `spectrum_span` is an enum of sample rates, and `spectrum_center` moves the NCO (`dds`) with `if` changed to keep `vfo` still; a centre that would leave the VFO out of view is refused with `range`.

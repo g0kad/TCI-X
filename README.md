@@ -2,7 +2,7 @@
 
 **TCI with extensions for full radio control.** It's an open, backwards-compatible superset of Expert Electronics' [TCI v2.0](https://github.com/ExpertSDR3/TCI), aimed at conventional CAT/CI-V transceivers as well as SDRs.
 
-**Status: Draft 0.1** (7 Oct 2026). It's implemented and in daily use, but it may still change. Comments and proposals are welcome.
+**Status: Draft 0.2** (27 Oct 2026). It's implemented and in daily use, but it may still change. Comments and proposals are welcome.
 
 ## Why
 

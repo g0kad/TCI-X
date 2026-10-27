@@ -24,6 +24,16 @@ Radios that send no scope data over CAT (IC-7100, K3, QMX+, FTDX10, among others
 
 ## 3. Proposed commands
 
+**The minimum for a panadapter.** A server that does these five things has a working panadapter in a client. Everything else in this section is optional, offered where the radio has it.
+
+1. `cap:spectrum,rw,info,<unit>,<max_points>,<max_rate>;` in the manifest. It must be `rw`: a client offers no panadapter for a line marked `r`, or for none.
+2. `cap_end;` closing the manifest (TCI-X §4). A client asks for the stream only after it.
+3. `spectrum_enable:<trx>,true,<points>,<rate>;` answered with its echo, giving the points and rate in use; `spectrum_enable:<trx>,false;` stops the stream.
+4. One binary frame of type `0x100` per row (§3.3), carrying the first point's frequency and the span.
+5. `spectrum_edges:<trx>,<low_hz>,<high_hz>;` pushed when the stream starts and whenever the view changes, with `cap:spectrum_edges,r,info;` in the manifest.
+
+Without `cap:spectrum_span` the client offers no span keys, and without `cap:spectrum_center` the view follows the radio. An SDR showing its I/Q should also read §5.
+
 ### 3.1 Manifest
 
 ```
