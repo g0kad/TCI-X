@@ -25,6 +25,7 @@ rit_offset:0,90
 tcix:1.0
 cap:vfo,rw,range,30000,470000000,1,hz
 cap:modulation,rw,enum,lsb,usb,am,cw,cwr,rtty,rttyr,nfm,wfm,digl,digu,digfm,dv
+cap:cw_side,r,info,lower
 cap:trx,rw,bool
 cap:split_enable,rw,bool
 cap:drive,rw,range,0,100,1,pct

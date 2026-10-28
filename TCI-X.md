@@ -284,6 +284,8 @@ Names: `alc` (%), `comp` (dB), `vd` (V), `id` (A), `po` (W), `swr` (ratio), `s` 
 
 TCI-X adds these `modulation` names where the radio has them: `cwr`, `rtty`, `rttyr`, `dv` (D-STAR: selecting the mode only, TCI-X 1.0 carries no D-STAR data), `digfm` (FM with DATA), `psk`, `pskr`. Base names keep their meanings.
 
+**CW sideband.** In `cw` the dial is the frequency heard at the CW pitch (`cw_pitch`, §5.5), and a signal above the dial is heard as a higher tone: the upper sideband. `cwr` is the mirror. A radio whose `cw` is the lower sideband (Icom's: the IC-7100's, and the IC-7300's and IC-705's at their default CW Normal Side) says so with `cap:cw_side,r,info,lower;`, and its `cwr` is then the upper. A client that turns a tone it hears into a tuning step (zero beat) needs it: on such a radio a tone above the pitch is a signal below the dial.
+
 ### 5.10 Memories
 
 | Command | Form | Notes |

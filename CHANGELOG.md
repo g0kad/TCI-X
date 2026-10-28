@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- §5.9: `cap:cw_side,r,info,lower` for a radio whose `cw` is the lower sideband, so a client's zero beat tunes the right way; without it `cw` is the upper, as before. Added for the IC-7100 (measured against a steady carrier: 40 Hz above the dial was heard 40 Hz below the pitch).
+
 ## Draft 0.2 (27 Oct 2026)
 
 Second public draft, still describing wire version `tcix:1.0`.
