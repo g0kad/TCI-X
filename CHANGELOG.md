@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- New drafts/second-receiver.md: a second receiver as `trx 1`, for TCI-X clients only: `cap:trx1,r,info,receive_only` and `cap:trx1.<command>` lines say what it offers, its state and commands are the ordinary ones with index 1, `audio_start:1` starts its stream (receiver 1 blocks). Added for kadrad-hub serving an Airspy HF+ as an IC-7100's sub receiver.
 - §5.9: `cap:cw_side,r,info,lower` for a radio whose `cw` is the lower sideband, so a client's zero beat tunes the right way; without it `cw` is the upper, as before. Added for the IC-7100 (measured against a steady carrier: 40 Hz above the dial was heard 40 Hz below the pitch).
 
 ## Draft 0.2 (27 Oct 2026)
