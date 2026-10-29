@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- §5.3: `rx_gain_auto:<trx>,<bool>`, the receiver's automatic front-end gain on or off, offered only where it has one. While it's on, the server pushes `rx_gain` when the gain changes, at most once a second; setting `rx_gain` turns it off and the server says so; turning it off keeps the gain reached. Proposed in [#1](https://github.com/g0kad/TCI-X/issues/1) by the author of hl2-tcix (the Hermes Lite 2's automatic LNA gain); also SDRplay and Airspy front ends.
 - New drafts/second-receiver.md: a second receiver as `trx 1`, for TCI-X clients only: `cap:trx1,r,info,receive_only` and `cap:trx1.<command>` lines say what it offers, its state and commands are the ordinary ones with index 1, `audio_start:1` starts its stream (receiver 1 blocks). Added for kadrad-hub serving an Airspy HF+ as an IC-7100's sub receiver.
 - §5.9: `cap:cw_side,r,info,lower` for a radio whose `cw` is the lower sideband, so a client's zero beat tunes the right way; without it `cw` is the upper, as before. Added for the IC-7100 (measured against a steady carrier: 40 Hz above the dial was heard 40 Hz below the pitch).
 
