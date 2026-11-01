@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- §5.4: `rx_roofing:<trx>,<name>`, a roofing filter the operator chooses, and `rx_narrow:<trx>,<bool>`, the radio's NARROW key. Added for the Yaesu FTDX101.
+
 ## Draft 0.3 (1 Nov 2026)
 
 Third public draft, still describing wire version `tcix:1.0`.
