@@ -246,12 +246,14 @@ All are bidirectional unless marked. The server echoes and pushes them just like
 |---|---|---|
 | `mic_gain` | `mic_gain:<trx>,<pct>;` | |
 | `mic_gain_builtin` | `mic_gain_builtin:<trx>,<pct>;` | The gain of a built-in microphone, on a radio with its own control for that as well as the hand microphone's (`mic_gain`), in the range its `cap` line gives. Added for the Xiegu X6200. |
-| `comp` | `comp:<trx>,<bool>,<pct>;` | Speech compressor on/off and level. |
+| `comp` | `comp:<trx>,<bool>,<pct>;` | Speech compressor on/off and level. A radio with only the switch has `cap:comp,rw,bool` and sends `comp:<trx>,<bool>;`; a level sent to it is ignored. |
+| `monitor_level` | `monitor_level:<trx>,<pct>;` | The level alone, for a radio with no monitor switch. Added for the Xiegu X6200. |
 | `monitor` | `monitor:<trx>,<bool>,<pct>;` | The radio's transmit monitor (hearing your own signal) on/off and level. Base TCI's `mon_enable` and `mon_volume` are the SDR program's own monitor, in dB; this is the radio's. |
 | `vox` | `vox:<trx>,<bool>;` | |
 | `vox_gain` | `vox_gain:<trx>,<pct>;` | VOX sensitivity, 0–100. |
 | `anti_vox` | `anti_vox:<trx>,<pct>;` | Anti-VOX level (how much receive audio it ignores), 0–100. |
 | `break_in` | `break_in:<trx>,<mode>;` | `off`, `semi` or `full`. |
+| `break_in_delay_ms` | `break_in_delay_ms:<trx>,<ms>;` | The same hang time in milliseconds, for a radio that works in those. Added for the Xiegu X6200 (`14 0F`). |
 | `break_in_delay` | `break_in_delay:<trx>,<tenths>;` | Semi break-in's hang time in tenths of a dot at the current speed (Icom 2.0–13.0 dots: `20`–`130`), as `cap:break_in_delay,rw,range,20,130,1,ddot`. |
 | `cw_pitch` | `cw_pitch:<trx>,<hz>;` | |
 | `essb` | `essb:<trx>,<bool>;` | Extended SSB: a wider TX bandwidth (the K3's 3.0–4.0 kHz). |

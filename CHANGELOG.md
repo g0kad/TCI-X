@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- §5.5: `break_in_delay_ms:<trx>,<ms>`, `monitor_level:<trx>,<pct>`, and `cap:comp,rw,bool` for a compressor with no level. Added for the Xiegu X6200.
 - §5.4: `rx_roofing:<trx>,<name>`, a roofing filter the operator chooses, and `rx_narrow:<trx>,<bool>`, the radio's NARROW key. Added for the Yaesu FTDX101.
 
 ## Draft 0.3 (1 Nov 2026)
