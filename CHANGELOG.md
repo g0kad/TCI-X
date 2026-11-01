@@ -1,7 +1,11 @@
 # Changelog
 
-## Unreleased
+## Draft 0.3 (1 Nov 2026)
 
+Third public draft, still describing wire version `tcix:1.0`.
+
+- New `error` codes (§5.1): `tx_audio_data`, a key-up with the client's audio refused because the radio takes it only in a data mode, and `tx_xit`, a key-up or tune refused because XIT is on with an offset that can't be read. Added for the Xiegu X6200.
+- §5.5: `mic_gain_builtin:<trx>,<pct>`, a built-in microphone's own gain beside `mic_gain`, and `cap:atu,w,bool` for a tuner that can be switched but not read. Added for the Xiegu X6200.
 - New drafts/ptt-device.md: a PTT device (a footswitch on a small wired board) connecting to the operator's client, not the radio's server, so it keys with the operator's microphone: `ptt_device`, `ptt` and a `ptt_alive` heartbeat from the device; `ptt` and `ptt_refused` from the client. Fails safe: unkey after 600 ms without a heartbeat or on a lost connection, never key on connect until the pedal has been released, allowed addresses only, wired rather than wireless. Asked for by a tester with a footswitch.
 - §5.3: `rx_gain_auto:<trx>,<bool>`, the receiver's automatic front-end gain on or off, offered only where it has one. While it's on, the server pushes `rx_gain` when the gain changes, at most once a second; setting `rx_gain` turns it off and the server says so; turning it off keeps the gain reached. Proposed in [#1](https://github.com/g0kad/TCI-X/issues/1) by the author of hl2-tcix (the Hermes Lite 2's automatic LNA gain); also SDRplay and Airspy front ends.
 - New drafts/second-receiver.md: a second receiver as `trx 1`, for TCI-X clients only: `cap:trx1,r,info,receive_only` and `cap:trx1.<command>` lines say what it offers, its state and commands are the ordinary ones with index 1, `audio_start:1` starts its stream (receiver 1 blocks). Added for kadrad-hub serving an Airspy HF+ as an IC-7100's sub receiver.
