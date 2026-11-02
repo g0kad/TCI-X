@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- §3 B20: a server should ping its clients and may treat one silent for 15 s or more as disconnected, so a link that dies without a word doesn't leave the radio keyed. Clients must keep reading their socket.
 - §5.5: `break_in_delay_ms:<trx>,<ms>`, `monitor_level:<trx>,<pct>`, and `cap:comp,rw,bool` for a compressor with no level. Added for the Xiegu X6200.
 - §5.4: `rx_roofing:<trx>,<name>`, a roofing filter the operator chooses, and `rx_narrow:<trx>,<bool>`, the radio's NARROW key. Added for the Yaesu FTDX101.
 
