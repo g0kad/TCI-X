@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- §5.5: adaptive predistortion: `predistortion:<trx>,<bool>`, a read-only `predistortion_state` (`off`, `learning`, `correcting`, `needs_calibration`, `fault`), and the actions `predistortion_calibrate` (it transmits, with every check a key-up has) and `predistortion_reset`. §5.6: a `pd` meter. Proposed in [#5](https://github.com/g0kad/TCI-X/issues/5) by the author of hl2-tcix (PureSignal-style correction on the Hermes Lite 2); also SmartSignal on the FLEX-8000.
+- §5.5: `cessb:<trx>,<bool>`, for a radio with CESSB as well as a speech compressor; where CESSB is the only compression, `comp` drives it. From [#2](https://github.com/g0kad/TCI-X/issues/2).
+- New drafts/slices.md: several slices (receivers) in one radio with one transmitter, such as a FLEX-6400's two or a Hermes Lite 2's eight, by `trx` index, told to base clients as `trx_count:N`, so a client that picks an index (fldigi's slices, WSJT-X's RX2) works unchanged. Keying an index transmits from that slice; B14 applies across all of them; a slice is shared and lasts after its last client. A separate second receiver (drafts/second-receiver.md) takes index N. Slices aren't presented as separate radios; slice ports, where `trx 0` is one slice for programs that know only `trx 0`, are views of the same radio, with one transmitter and shared settings across every port. From [#4](https://github.com/g0kad/TCI-X/issues/4).
 - §3 B20: a server should ping its clients and may treat one silent for 15 s or more as disconnected, so a link that dies without a word doesn't leave the radio keyed. Clients must keep reading their socket.
 - §5.5: `break_in_delay_ms:<trx>,<ms>`, `monitor_level:<trx>,<pct>`, and `cap:comp,rw,bool` for a compressor with no level. Added for the Xiegu X6200.
 - §5.4: `rx_roofing:<trx>,<name>`, a roofing filter the operator chooses, and `rx_narrow:<trx>,<bool>`, the radio's NARROW key. Added for the Yaesu FTDX101.

@@ -9,6 +9,7 @@ A second receiver is what sets top radios apart: listening to the DX and to the 
 ## 2. On the wire
 
 - **TCI-X clients only.** A base client is told `trx_count:1` and sees nothing of trx 1, as before. A client that opts in (§4.1) is told of it in the manifest.
+- **Its index** is 1 for a radio of one slice, as everywhere below. A server whose radio has N slices (drafts/slices.md) gives it index N.
 - **Announced** by `cap:trx1,r,info,<facts>` before `cap_end`. The facts so far: `receive_only` (it never transmits). A client that doesn't know this draft ignores the line.
 - **What it offers** as `cap:trx1.<command>,…` lines: the same form as trx 0's (§4.2), for the commands trx 1 takes. A command it doesn't list, it doesn't take, whatever trx 0 does. Per-connection commands (the audio stream format, `rx_sensors_enable`, `meters_enable`) aren't listed: they apply to both.
 - **Its limits** come from its own lines: `cap:trx1.vfo,rw,range,<min>,<max>,1,hz` and `cap:trx1.modulation,rw,enum,…` stand for `vfo_limits` and `modulations_list`, which have no trx index.

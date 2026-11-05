@@ -27,6 +27,9 @@ TCI is a good transport: one WebSocket carrying text commands and binary audio, 
 | [TCI-X.md](TCI-X.md) | The specification: base clarifications, negotiation and the manifest, extension commands, the Opus RX audio codec. |
 | [drafts/spectrum.md](drafts/spectrum.md) | Draft: panadapter spectrum stream and server-kept spots. |
 | [drafts/eq.md](drafts/eq.md) | Draft: RX and TX equalisers. |
+| [drafts/second-receiver.md](drafts/second-receiver.md) | Draft: a receive-only second receiver as trx 1, for TCI-X clients. |
+| [drafts/slices.md](drafts/slices.md) | Draft: several slices (receivers) in one radio with one transmitter, by trx index, for base clients too. |
+| [drafts/ptt-device.md](drafts/ptt-device.md) | Draft: a PTT footswitch that connects to the operator's client. |
 | [examples/](examples/) | Real init bursts and manifests from the reference server, for five radios. |
 | [CHANGELOG.md](CHANGELOG.md) | Changes between drafts. |
 
