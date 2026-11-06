@@ -130,7 +130,7 @@ On success the server replies `login:ok,<role>;` and continues as on any connect
 |---|---|
 | `listen` | tune, listen and read the meters; never transmit (the server sends `receive_only:true`) |
 | `operate` | also transmit |
-| `station` | also switch and tune the station's devices (amplifier, rotator, §5.13–5.14) |
+| `station` | also switch and tune the station's devices (amplifier, rotator, antenna controller, §5.13–5.14, §5.16) |
 | `admin` | everything, including the server's own setup |
 
 A command the role doesn't allow is refused with `error:<command>,access,<text>` (§5.1). On failure (an unknown user and a wrong password look the same) the server sends `error:login,access,<text>` and closes the connection a second later. A server should limit failed logins from one address (the reference server blocks an address for a minute after five failures in a minute) and log them.
@@ -172,7 +172,7 @@ control:;                     nobody has control
 - **Never while transmitting.** Control doesn't change hands while the radio transmits. A hand-over, an admin's take or a release made while it's keyed waits for the unkey, then applies.
 - **Idle.** When the operator has made no change and not transmitted for the idle time in `cap:control`, the server takes control back (`control:;`), sends `error:control,idle,<text>` to the operator's connections and closes them, so a client should then wait for its user before connecting again rather than reconnecting by itself. A server may count the idle time only while another account is connected, so an operator alone on the radio keeps control: nobody is waiting for it (the reference server does).
 - **Disconnecting.** When the operator's last connection closes, control is released (and the radio unkeyed, as B14 already requires).
-- **Devices.** The amplifier and rotator (§5.13–5.14) follow the same rule: only the operator may change them, as far as its role allows.
+- **Devices.** The amplifier, rotator and antenna controller (§5.13–5.14, §5.16) follow the same rule: only the operator may change them, as far as its role allows.
 
 ## 5. Extension commands
 
@@ -183,7 +183,7 @@ All are bidirectional unless marked. The server echoes and pushes them just like
 | Command | Form | Notes |
 |---|---|---|
 | `tcix` | `tcix:<version>;` | Opt-in (§4.1). |
-| `error` | `error:<command>,<code>[,<text>];` | Server → client. Codes: `unsupported`, `range`, `busy` (another client owns TX), `tx_active` (not allowed while transmitting), `duplex` (key refused: a duplex offset is set outside FM, so the radio would transmit off the dial frequency), `tx_lock` (key or change refused: the TX frequency or power would fall outside the server's configured TX lock, a site limit such as one dummy load's frequency and power), `tx_audio` (key with `tci` audio refused: the radio's audio input wouldn't take the client's audio over this link), `tx_timer` (key refused: over a network link that can drop while keyed, the radio's own TX timer is off), `tx_where` (key refused: the radio reports a TX frequency other than the server's), `tx_audio_data` (key with `tci` audio refused: this radio takes the client's audio only in a data mode, and isn't in one; in this mode it uses its own microphone), `tx_xit` (key or tune refused: XIT is on at the radio, and its offset can't be read, so where it would transmit isn't known), `radio` (the radio rejected or didn't answer), `device` (an amplifier or rotator, or the program that owns it, refused or can't be reached; the text says why, e.g. someone else is in control of it, §5.13–5.14), `interlock` (key or tune refused: something in this radio's transmit path that it shares with another radio on the same server, such as an amplifier or antenna, or the station's rule that the two don't transmit together, is in use by that radio; the text names the device and the radio), `access` (refused by the server's rules for who may do what: a radio set to listen only, so its clients may tune and listen but never transmit, or a login whose role doesn't allow it, §4.3; the text says why; as `error:login,access,…`, a failed login), `control` (refused because another account is the radio's operator, §4.4; the text is the operator's account name), `timeout`. |
+| `error` | `error:<command>,<code>[,<text>];` | Server → client. Codes: `unsupported`, `range`, `busy` (another client owns TX), `tx_active` (not allowed while transmitting), `duplex` (key refused: a duplex offset is set outside FM, so the radio would transmit off the dial frequency), `tx_lock` (key or change refused: the TX frequency or power would fall outside the server's configured TX lock, a site limit such as one dummy load's frequency and power), `tx_audio` (key with `tci` audio refused: the radio's audio input wouldn't take the client's audio over this link), `tx_timer` (key refused: over a network link that can drop while keyed, the radio's own TX timer is off), `tx_where` (key refused: the radio reports a TX frequency other than the server's), `tx_audio_data` (key with `tci` audio refused: this radio takes the client's audio only in a data mode, and isn't in one; in this mode it uses its own microphone), `tx_xit` (key or tune refused: XIT is on at the radio, and its offset can't be read, so where it would transmit isn't known), `radio` (the radio rejected or didn't answer), `device` (an amplifier, rotator or antenna controller, or the program that owns it, refused or can't be reached; the text says why, e.g. someone else is in control of it, §5.13–5.14, §5.16), `interlock` (key or tune refused: something in this radio's transmit path that it shares with another radio on the same server, such as an amplifier or antenna, or the station's rule that the two don't transmit together, is in use by that radio, or an antenna in its path is moving, §5.16; the text names the device, and the radio using it), `access` (refused by the server's rules for who may do what: a radio set to listen only, so its clients may tune and listen but never transmit, or a login whose role doesn't allow it, §4.3; the text says why; as `error:login,access,…`, a failed login), `control` (refused because another account is the radio's operator, §4.4; the text is the operator's account name), `timeout`. |
 | `radio_state` | `radio_state:<state>;` | Server → client: `connected`, `no_response`, `powered_off`, `port_lost`. |
 | `power` | `power:<bool>;` | Radio power on/off, where the radio supports it, or where the server switches it itself (a relay on the radio's remote power line, say: the reference server does this for a FlexRadio). The push of the new state is the answer. A server may refuse it with `access` to a login whose role isn't `station` or above (§4.3), and with `device` when what switches it can't be reached. |
 | `dial_lock` | `dial_lock:<bool>;` | The radio's own dial lock: its front-panel tuning is locked. Tuning over TCI still works, but a client with a dial of its own should stop it too while the lock is on, so the lock means the same everywhere. One for the radio, so no trx index. |
@@ -427,6 +427,37 @@ The panadapter stream is a draft, not yet in 1.0: [drafts/spectrum.md](drafts/sp
 | Command | Form | Notes |
 |---|---|---|
 | `spectrum_enable` | `spectrum_enable:<trx>,<bool>[,<points>,<rate>];` | Per connection: starts or stops this client's spectrum stream, one binary frame of type `0x100` per row ([drafts/spectrum.md](drafts/spectrum.md) §3.3). Announced by `cap:spectrum,rw,info,<unit>,<max_points>,<max_rate>;`. The span, centre, edges and the radio's scope settings are in the draft. |
+
+### 5.16 Antenna controller
+
+A tunable antenna's controller, such as a SteppIR's, which moves the antenna's elements to resonate at a frequency, and which the server reads and commands through the controller's own port (or a program that owns that port). The controller may also follow the radio by itself, through its own transceiver interface: a server sees those moves when it next reads the controller.
+
+A server that's set up with one announces it in the manifest, and keeps the announcement while the controller isn't answering:
+
+```
+cap:ant,r,info,<maker>,<model>;                    e.g. cap:ant,r,info,SteppIR,yagi;
+cap:ant_state,r,enum,connected,no_response,unreachable;
+cap:ant_freq,r,info;
+cap:ant_busy,r,bool;
+cap:ant_direction,rw,enum,normal,180,bidir;        the directions this antenna has (a SteppIR vertical adds 3/4)
+cap:ant_tune,w,range,3400000,60000000,10,Hz;
+cap:ant_autotrack,w,bool;
+cap:ant_home,w,action;
+cap:ant_calibrate,w,action;
+```
+
+| Command | Form | Notes |
+|---|---|---|
+| `ant_state` | `ant_state:<state>;` | Server → client, as `amp_state` (§5.13). While it isn't `connected`, a client shows the antenna's frequency and direction as unavailable. |
+| `ant_freq` | `ant_freq:<hz>;` | Read-only. The frequency the elements are set for, pushed when it changes; empty when the elements are home (retracted). |
+| `ant_busy` | `ant_busy:<bool>;` | Read-only. The elements are moving, or about to (a command on its way, or a short settling time after one). While it's `true` the server refuses `trx` and `tune` on any radio whose transmit path includes this antenna, with `interlock` and a text saying the antenna is moving. It's a software interlock, not a hardware one: the controller's own moves, following the radio, are seen only at the server's reading rate. |
+| `ant_direction` | `ant_direction:<dir>;` | The direction pattern: `normal`, `180` (reversed), `bidir`, and `3/4` on a vertical that has it, from the cap line. Setting it moves the elements at their current frequency; refused while they're home. |
+| `ant_tune` | `ant_tune:<hz>;` | Write-only. Move the elements for a frequency, in the current direction; the `ant_busy` and `ant_freq` pushes are the answer. A client that wants the antenna on the radio's frequency sends that frequency. |
+| `ant_autotrack` | `ant_autotrack:<bool>;` | Write-only, where announced: the controller follows the radio's frequency by itself, or stops following it. A controller that can't report this has no state to push, so a client offers on and off and shows no state (as `cap:atu,w,bool`, §5.5). |
+| `ant_home` | `ant_home;` | Action: retract the elements (before the controller is switched off, or in high wind). |
+| `ant_calibrate` | `ant_calibrate;` | Action: home the elements and count them out again, after the controller lost power while they moved. Refused with `ant_busy` true. |
+
+Every change is refused with `tx_active` while this radio transmits (moving the elements under power can damage them), with `range` for a value outside the cap line, and with `device` while the controller isn't `connected` or won't take the command (someone else is in control of it there, or it's set to read only). An antenna controller is TCI-X only, and one per server: no trx index.
 
 ## 6. Binary streams
 
