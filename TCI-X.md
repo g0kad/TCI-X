@@ -459,6 +459,10 @@ cap:ant_calibrate,w,action;
 
 Every change is refused with `tx_active` while this radio transmits (moving the elements under power can damage them), with `range` for a value outside the cap line, and with `device` while the controller isn't `connected` or won't take the command (someone else is in control of it there, or it's set to read only). An antenna controller is TCI-X only, and one per server: no trx index.
 
+### 5.17 Data modes (draft)
+
+Decoding FT8, FT4 and similar modes in the server, beside the radio, with the decodes sent to clients as text (no audio needed), is a draft, not yet in 1.0: [drafts/data-modes.md](drafts/data-modes.md). A client offers it only where the manifest has `cap:data`.
+
 ## 6. Binary streams
 
 These are unchanged from the base spec, except for RX audio after `audio_codec:0,opus` (§5.1). Each RX_AUDIO block then carries one Opus packet (RFC 6716) as its payload, with `codec` = 1 (0 is PCM, as in base TCI), `channels` = 1, `sample_rate` the rate it decodes to, and `length` the samples it decodes to, as for PCM. The packet's size is the payload's: the message length less the 64-byte header. The reference server sends 40 ms packets at 24 kbit/s (voice, up to 8 kHz wide): about 40 kbit/s with the headers, against 0.2 Mbit/s for 12 kHz int16. Base clients never see Opus: they can't ask for it.
