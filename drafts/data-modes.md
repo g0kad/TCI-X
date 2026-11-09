@@ -55,6 +55,7 @@ cap:data_tx,rw,info;
 cap:data_tx_stop,w,bool;
 cap:data_tune,w,bool;
 cap:data_tx_level,rw,range,-40,0,1,db;
+cap:data_tx_shift,rw,enum,none,fake_it,split;
 ```
 
 | Command | Form | Notes |
@@ -62,6 +63,7 @@ cap:data_tx_level,rw,range,-40,0,1,db;
 | `data_tx` | `data_tx:<trx>,<slot>,<hz>,<text>;` | Client → server: send `text` (percent-encoded, as in `data_decode`) once, in the mode set by `data`, at audio frequency `hz` (200 to 3000), in the next period of `slot`: `0` for even periods, `1` for odd, counting whole periods since the Unix epoch (for FT8, `0` starts at :00 and :30). A period that began less than two fifteenths of its length ago still counts: the signal then starts late. A new `data_tx` replaces one that is waiting. One sent while transmitting takes the following period. |
 | `data_tx_stop` | `data_tx_stop:<trx>;` | Client → server: cancel what's waiting and unkey now, if transmitting. Any client may stop it. |
 | `data_tx_level` | `data_tx_level:<trx>,<db>;` | The level of the generated audio into the radio, in dB of full scale, as in the range on its cap line. Set by the operator, shared by every client and pushed on change. It applies at once, during a transmission too, so the operator can bring the radio's ALC down while watching it. |
+| `data_tx_shift` | `data_tx_shift:<trx>,<method>;` | How the server keeps the transmitted audio high enough that its harmonics fall above the radio's TX passband. `none`: the audio is sent at `hz` with the radio as it is. Otherwise, when `hz` is outside 1500–1999 Hz, the server moves the transmit dial by a multiple of 500 Hz and the audio the other way, to 1500–1999 Hz, so the signal stays on the same radio frequency: `fake_it` retunes the dial before keying and back after unkeying, before receiving; `split` sets the other VFO and split before keying, and clears them after. A radio without a second VFO doesn't list `split`. The server leaves a radio already in split as the operator set it. Set by the operator, shared by every client, pushed on change; it applies from the next key-up. Also applies to `data_tune`. |
 | `data_tune` | `data_tune:<trx>,<bool>,<hz>;` | A steady tone at audio frequency `hz` at the `data_tx_level` level, starting now, for tuning an antenna. The server ends it after at most 15 s, or on `false`. It takes every check a transmission does except the clock's, and shows in `data_tx_state` with the text `TUNE`. |
 | `data_tx_state` | `data_tx_state:<trx>,<state>,<period>,<hz>,<text>;` | Server → client, on change: `idle` (nothing waiting or going, after a message finished), `queued` (waiting for `period`), `sending`, or `stopped` (ended before it finished: `data_tx_stop`, a refusal, the radio unkeyed). The last three are empty when `idle` or `stopped`. |
 
