@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Draft data modes: `data_waterfall` lines come about two a second, each covering half a second (were about four).
 - Draft data modes: `data_tx_shift` (`none`, `fake_it`, `split`): the server moves the dial or the other VFO so the audio of a transmission sits at 1500–1999 Hz and its harmonics fall above the TX passband, with the radio frequency unchanged. Added for KADRAD.
 - New draft, data modes ([drafts/data-modes.md](drafts/data-modes.md), §5.17): the server decodes FT8 and FT4 from the radio's audio and sends decodes as text, so a client needs no audio or decoder: `data` (the mode a receiver decodes), `data_enable` (per connection), `data_decode` (period, stage `early`/`partner`/`final`, SNR, DT, frequency, a priori mark, percent-encoded text), `data_period` (a stage is complete), `data_partner`, `data_my_call` and `data_clock`. Transmitting is outlined, with the rule that a server never operates unattended. Added for KADRAD's data mode engine.
 - New §5.16, antenna controller: a tunable antenna such as a SteppIR, read and commanded through its controller: `ant_state`, `ant_freq` (empty when home), `ant_busy`, `ant_direction`, `ant_tune`, `ant_autotrack`, `ant_home`, `ant_calibrate`. While `ant_busy` is true the server refuses `trx` and `tune` with `interlock` (a software TX interlock for a station without the controller's hardware one); changes are refused with `tx_active` while transmitting. `device`, `interlock`, the `station` role and §4.4 now mention it. Added for kadrad-steppir.
