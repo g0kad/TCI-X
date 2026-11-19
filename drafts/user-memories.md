@@ -1,6 +1,6 @@
 # TCI-X draft: an operator's own memories
 
-*Draft, not in TCI-X 1.0. First written 19 Nov 2026. Nothing implements it yet; kadrad-hub and KADRAD will. Comments welcome.*
+*Draft, not in TCI-X 1.0. First written 19 Nov 2026. kadrad-hub keeps the memories (19 Nov 2026); KADRAD, the client, doesn't use them yet. Comments welcome.*
 
 ## 1. Why
 
@@ -54,7 +54,7 @@ The fields:
 
 In a `deleted` record the fields after `state` are empty: `user_memory:<id>,<changed>,deleted;`.
 
-Errors (§5.1): `access` where there's no account to keep memories for; `range` for a malformed `id`, `changed` or `state`, a line too long, a `changed` more than a day ahead of the server's clock, or a new memory when the account already holds as many as the cap line allows.
+Errors (§5.1): `access` where there's no account to keep memories for; `range` for a malformed `id`, `changed` or `state`, a line too long, a `changed` more than a day ahead of the server's clock, or a new memory when the account already holds as many as the cap line allows. A new code, `store`: the server couldn't save the record (its disk, say); the client keeps its copy and offers it again on its next connection.
 
 ## 4. Which record wins, and deleting
 
