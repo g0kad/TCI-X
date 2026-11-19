@@ -34,7 +34,7 @@ Any role may keep memories, `listen` included: they are the account's own notes 
 | Command | Form | Notes |
 |---|---|---|
 | `user_memory_list` | `user_memory_list;` → one `user_memory` line per record, then `user_memory_list_end:<count>;` | Read the account's whole list, deleted records included (§4). `count` is the number of lines sent. |
-| `user_memory` | `user_memory:<id>,<changed>,<state>,<name>,<group>,<rx_hz>,<mode>,<duplex_dir>,<offset_hz>,<tone_mode>,<tone_hz>[,…];` | One record. Client → server: store it, if it's newer than the one the server holds for this `id` (§4). The server always answers with the record as it then holds it, so a client whose write lost learns what won. Server → client: also pushed to the account's other connections, on any radio the server serves, when a write is stored. |
+| `user_memory` | `user_memory:<id>,<changed>,<state>,<name>,<group>,<rx_hz>,<mode>,<duplex_dir>,<offset_hz>,<tone_mode>,<tone_hz>,<fm_deviation>[,…];` | One record. Client → server: store it, if it's newer than the one the server holds for this `id` (§4). The server always answers with the record as it then holds it, so a client whose write lost learns what won. Server → client: also pushed to the account's other connections, on any radio the server serves, when a write is stored. |
 
 The fields:
 
@@ -49,6 +49,7 @@ The fields:
 | `mode` | A `modulation` name, base or §5.9. |
 | `duplex_dir`, `offset_hz` | As in §5.7 and §5.10's `memory`: `simplex`, `minus` or `plus`, and the offset in Hz. |
 | `tone_mode`, `tone_hz` | As in §5.7 and §5.10's `memory`. |
+| `fm_deviation` | For an FM memory, `standard` or `narrow` as in §5.7's `fm_deviation`, or empty where it wasn't known when the memory was saved (the radio it was saved on couldn't say). Empty in other modes. A record that ends before this field reads as empty. |
 
 **More fields may follow.** A server stores every field after `state` as it came and returns them unchanged, whether or not it knows them, and doesn't check them beyond the line's length (at most 1024 bytes). A client keeps and sends back fields beyond those it knows when it changes a record. So a later version, or one client, can add a field without the servers in between having to learn it.
 
@@ -85,11 +86,15 @@ The client recalls a memory with the commands it would use by hand: `vfo`, `modu
 
 A client should offer a memory only on a radio that can take it, judged from the manifest: its frequency within the radio's coverage and its mode among the radio's. One that needs a duplex or tone the radio can't set should be shown as such rather than recalled without it, since it would then transmit on the wrong frequency or without access.
 
+**FM deviation.** Where the memory says `standard` or `narrow` and the radio offers `fm_deviation` once it's in FM, the client sets it. Where the radio doesn't offer it, the client still recalls the memory and tells the operator that the deviation is the radio's own setting, since a narrow channel worked with standard deviation is over-deviated. (Recalling with a note, rather than refusing as for a missing shift or tone, is to be judged in use.)
+
+**`fm` and `nfm`.** A memory's mode is taken for another name only on a radio with a single FM mode, where `fm` and `nfm` can only be the same thing. On a radio that tells FM modes apart they are different modes.
+
 A memory recalled this way leaves the radio in VFO mode. It doesn't use or change the radio's own memory mode (`memory_mode`, §5.10).
 
 ## 7. Not covered
 
 - **Reading only what changed.** The whole list is read on each connection: a few hundred records are some tens of kilobytes. A read of what was stored since a point the server names may follow if that proves too much on a mobile link.
 - **Copying from the radio's memories.** A client can read §5.10's list and save channels as memories of this kind; that needs nothing new on the wire.
-- **Split-frequency pairs, filters, power and antenna.** Left out as the least portable between radios. The trailing-fields rule (§3) leaves room.
+- **Split-frequency pairs, filters, power and antenna.** Left out as the least portable between radios (FM's deviation is carried as what the channel needs, not as a filter). The trailing-fields rule (§3) leaves room.
 - **Sharing a list between accounts** (a club's repeater list for every member).

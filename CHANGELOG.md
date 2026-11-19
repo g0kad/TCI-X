@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- §5.7: `fm_deviation:<trx>,<width>` (`standard`, about 5 kHz for 25 kHz channels, or `narrow`, about 2.5 kHz for 12.5 kHz channels), offered only where the radio switches it and only while in FM. A radio with two modes for it (FlexRadio's FM and NFM, Yaesu's FM and FM-N) is presented as one `nfm` mode with this setting. Draft user memories carry it as a field, and say when `fm` and `nfm` may stand for each other (only on a radio with one FM mode). Added for KADRAD's memories, which are recalled on radios other than the one they were saved on.
 - New draft, an operator's own memories ([drafts/user-memories.md](drafts/user-memories.md)): memories the server keeps for the logged-in account, the same on every radio it serves, in place of each radio's own channels: `cap:user_memory`, `user_memory_list` and `user_memory` (a permanent `id`, `changed` time, `set` or `deleted`, name, group, frequency, mode, duplex and tone, with unknown trailing fields kept). The later change wins and deletes are kept, so a client that carries its copy from server to server brings them all into step; the client recalls a memory with the ordinary commands. Added for KADRAD.
 - Draft data modes: `data_waterfall` lines come about two a second, each covering half a second (were about four).
 - Draft data modes: `data_tx_shift` (`none`, `fake_it`, `split`): the server moves the dial or the other VFO so the audio of a transmission sits at 1500–1999 Hz and its harmonics fall above the TX passband, with the radio frequency unchanged. Added for KADRAD.
